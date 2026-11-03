@@ -1,63 +1,105 @@
 <template>
-  <view class="jiao-blocks" :class="{ tossing }">
-    <view
-      v-for="(flat, i) in blocks"
-      :key="i"
-      class="block"
-      :class="[flat ? 'flat' : 'round', i === 1 ? 'mirror' : '']"
-    >
-      <view class="shape" />
+  <view class="jiao-stage">
+    <Sparkles v-if="state === 'landed' && sheng" :key="landKey" />
+    <view class="pair">
+      <view
+        v-for="(flat, i) in blocks"
+        :key="i + '-' + landKey"
+        class="block"
+        :class="['b' + i, state]"
+      >
+        <image
+          class="img"
+          :class="{ mirror: i === 1 }"
+          :src="flat ? '/static/art/jiao-flat.svg' : '/static/art/jiao-round.svg'"
+          mode="widthFix"
+        />
+      </view>
     </view>
+    <view class="floor" />
   </view>
 </template>
 
 <script setup>
-// 两片新月形筊杯：flat=true 平面朝上（显示木纹浅面），false 凸面朝上（深红漆面）
-defineProps({
+import { computed } from 'vue'
+import Sparkles from './Sparkles.vue'
+
+// state: idle 待掷（轻轻浮动）/ tossing 抛起翻转 / landed 落地弹跳
+const props = defineProps({
   blocks: { type: Array, default: () => [true, false] },
-  tossing: { type: Boolean, default: false },
+  state: { type: String, default: 'idle' },
+  landKey: { type: Number, default: 0 },
 })
+const sheng = computed(() => props.blocks[0] !== props.blocks[1])
 </script>
 
-<style scoped>
-.jiao-blocks {
+<style lang="scss" scoped>
+.jiao-stage {
+  position: relative;
+  height: 340rpx;
+}
+.pair {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 40rpx;
   display: flex;
   justify-content: center;
-  gap: 48rpx;
-  height: 240rpx;
-  align-items: center;
+  gap: 70rpx;
 }
 .block {
-  width: 120rpx;
-  height: 220rpx;
-  transition: transform 0.3s;
+  width: 96rpx;
 }
-.shape {
-  width: 100%;
-  height: 100%;
-  border-radius: 120rpx 0 0 120rpx / 110rpx 0 0 110rpx;
-  box-shadow: 0 8rpx 18rpx rgba(80, 10, 0, 0.35);
+.img {
+  width: 96rpx;
+  display: block;
+  filter: drop-shadow(0 10rpx 8rpx rgba(80, 10, 0, 0.3));
 }
-.mirror .shape {
-  border-radius: 0 120rpx 120rpx 0 / 0 110rpx 110rpx 0;
+.img.mirror {
+  transform: scaleX(-1);
 }
-.round .shape {
-  background: radial-gradient(circle at 40% 35%, #e0473a, #a3160d 60%, #6e0c06);
+.idle.b0 { animation: idle 2.6s ease-in-out infinite; }
+.idle.b1 { animation: idle 2.6s ease-in-out 0.4s infinite; }
+.tossing.b0 { animation: toss0 1s cubic-bezier(0.3, 0.6, 0.5, 1) infinite; }
+.tossing.b1 { animation: toss1 1s cubic-bezier(0.3, 0.6, 0.5, 1) 0.08s infinite; }
+.landed.b0 { animation: land0 0.7s ease-out both; }
+.landed.b1 { animation: land1 0.7s ease-out 0.06s both; }
+
+@keyframes idle {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10rpx) rotate(3deg); }
 }
-.flat .shape {
-  background: linear-gradient(135deg, #f3d9a4, #d9b06a);
-  border: 4rpx solid #a3160d;
-  box-sizing: border-box;
+@keyframes toss0 {
+  0% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(-30rpx, -230rpx) rotate(-400deg); }
+  100% { transform: translate(0, 0) rotate(-720deg); }
 }
-.tossing .block {
-  animation: toss 0.6s ease-in-out infinite;
+@keyframes toss1 {
+  0% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(30rpx, -260rpx) rotate(380deg); }
+  100% { transform: translate(0, 0) rotate(720deg); }
 }
-.tossing .block.mirror {
-  animation-delay: 0.15s;
+@keyframes land0 {
+  0% { transform: translateY(-180rpx) rotate(-160deg); }
+  55% { transform: translateY(0) rotate(-8deg); }
+  72% { transform: translateY(-26rpx) rotate(6deg); }
+  86% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(0) rotate(-12deg); }
 }
-@keyframes toss {
-  0% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-120rpx) rotate(180deg); }
-  100% { transform: translateY(0) rotate(360deg); }
+@keyframes land1 {
+  0% { transform: translateY(-200rpx) rotate(170deg); }
+  55% { transform: translateY(0) rotate(8deg); }
+  72% { transform: translateY(-22rpx) rotate(-6deg); }
+  86% { transform: translateY(0) rotate(2deg); }
+  100% { transform: translateY(0) rotate(12deg); }
+}
+.floor {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(110, 12, 6, 0.18), transparent 70%);
 }
 </style>

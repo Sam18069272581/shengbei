@@ -5,23 +5,24 @@
       <view class="section-title">一、所问何事</view>
       <view class="chips">
         <view v-for="t in TOPICS" :key="t.key" class="chip" :class="{ on: topic === t.key }" @click="pickTopic(t.key)">
-          {{ t.name }}
+          {{ t.icon }} {{ t.name }}
         </view>
       </view>
 
       <view class="section-title">二、向哪位神明求签</view>
-      <view
-        v-for="d in deities"
-        :key="d.id"
-        class="card deity"
-        :class="{ on: deityId === d.id }"
-        @click="deityId = d.id"
-      >
-        <view class="deity-name">
-          {{ d.name }}<text class="muted"> · {{ d.title }}</text>
-          <text v-if="d.id === recommended" class="tag">推荐</text>
+      <view class="god-grid">
+        <view
+          v-for="d in deities"
+          :key="d.id"
+          class="god-card"
+          :class="{ on: deityId === d.id }"
+          @click="deityId = d.id"
+        >
+          <view v-if="d.id === recommended" class="tag">推荐</view>
+          <DeityAvatar :id="d.id" :size="170" :mood="deityId === d.id ? 'laugh' : 'idle'" />
+          <view class="god-name">{{ d.name }}</view>
+          <view class="muted">{{ d.total }} 签 · {{ d.domains.slice(0, 2).join('、') }}</view>
         </view>
-        <view class="muted">{{ d.setName }} {{ d.total }} 签 · 主 {{ d.domains.join('、') }}</view>
       </view>
       <view v-if="!deities.length" class="muted">签文数据尚未生成，请先运行 npm run build:data</view>
 
@@ -31,37 +32,43 @@
 
     <!-- 第二步：摇签 -->
     <block v-else-if="step === 'shake'">
-      <view class="center-title">{{ deity.name }}</view>
-      <view class="muted center">所问：{{ topicName(topic) }}　第 {{ attempt }} 次求签</view>
-      <view class="tube" :class="{ shaking }">
-        <view class="sticks">
-          <view v-for="i in 9" :key="i" class="stick" :style="{ transform: `rotate(${(i - 5) * 4}deg)` }" />
+      <view class="muted center ask-line">所问：{{ topicName(topic) }}　第 {{ attempt }} 次求签</view>
+      <DeityAvatar :id="deityId" :size="220" :mood="shaking ? 'think' : drawn ? 'nod' : 'idle'" :bubble="shaking ? '诚心摇～' : drawn ? '就是这支' : '请摇签筒'" />
+      <view class="tube-wrap" @click="shakeTube">
+        <view class="tube" :class="{ shaking }">
+          <view class="sticks">
+            <view v-for="i in 11" :key="i" class="stick" :class="['s' + i, { jiggle: shaking }]" />
+          </view>
+          <image class="tube-img" src="/static/art/tube.svg" mode="widthFix" />
         </view>
-        <view class="tube-body">签</view>
+        <view v-if="drawn" class="flying-stick">
+          <view class="stick-face">第{{ cnNumber(drawn) }}签</view>
+        </view>
       </view>
       <view v-if="drawn" class="drawn">
         掉出一支：<text class="drawn-no">第{{ cnNumber(drawn) }}签</text>
       </view>
       <view v-if="!drawn" class="btn" :class="{ disabled: shaking }" @click="shakeTube">
-        {{ shaking ? '摇签中…' : '摇 签（或摇手机）' }}
+        {{ shaking ? '签筒哗啦啦…' : '摇 签（或摇手机）' }}
       </view>
-      <view v-else class="btn" @click="step = 'confirm'">掷筊请示，确认此签</view>
+      <view v-else class="btn" @click="toConfirm">掷筊请示，确认此签</view>
     </block>
 
     <!-- 第三步：掷筊确认 -->
     <block v-else-if="step === 'confirm'">
       <view class="center-title">第{{ cnNumber(drawn) }}签 · 是否为此签？</view>
-      <JiaoBlocks :blocks="jiao ? jiao.blocks : [true, false]" :tossing="tossing" />
-      <view v-if="jiao && !tossing" class="center">
+      <DeityAvatar :id="deityId" :size="200" :mood="avatarMood" :mood-key="landKey" :bubble="avatarBubble" />
+      <JiaoBlocks :blocks="jiao ? jiao.blocks : [true, false]" :state="jiaoState" :land-key="landKey" />
+      <view v-if="jiao && jiaoState === 'landed'" class="center" :key="landKey">
         <view class="jiao-name" :class="jiao.kind">{{ jiao.name }}</view>
         <view class="muted">{{ confirmText }}</view>
       </view>
 
-      <view v-if="!jiao || tossing" class="btn" :class="{ disabled: tossing }" @click="tossConfirm">
-        {{ tossing ? '掷筊中…' : '掷 筊' }}
+      <view v-if="!jiao || jiaoState === 'tossing'" class="btn gap" :class="{ disabled: jiaoState === 'tossing' }" @click="tossConfirm">
+        {{ jiaoState === 'tossing' ? '筊杯飞起来啦…' : '掷 筊' }}
       </view>
-      <view v-else-if="jiao.kind === 'sheng'" class="btn" @click="openResult">圣筊应允，看签诗</view>
-      <view v-else-if="attempt < MAX_ATTEMPTS" class="btn" @click="redraw">重新求签</view>
+      <view v-else-if="jiao.kind === 'sheng'" class="btn gap glow" @click="openResult">圣筊应允，看签诗</view>
+      <view v-else-if="attempt < MAX_ATTEMPTS" class="btn gap" @click="redraw">重新求签</view>
       <block v-else>
         <view class="muted center gap">已求 {{ MAX_ATTEMPTS }} 次未得圣筊，或许时机未到，或问题还不够清楚。</view>
         <view class="btn" @click="openResult">仍然看这支签</view>
@@ -77,6 +84,7 @@
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import JiaoBlocks from '../../components/JiaoBlocks.vue'
+import DeityAvatar from '../../components/DeityAvatar.vue'
 import { TOPICS, topicName, listDeities, recommendDeity, getSet, cnNumber } from '../../utils/qian'
 import { throwJiao } from '../../utils/jiao'
 import { addHistory } from '../../utils/storage'
@@ -89,18 +97,28 @@ const step = ref('choose')
 const topic = ref('career')
 const deityId = ref('')
 const recommended = computed(() => recommendDeity(topic.value))
-const deity = computed(() => deities.find((d) => d.id === deityId.value) || {})
 
 const attempt = ref(1)
 const shaking = ref(false)
 const drawn = ref(0)
 const jiao = ref(null)
-const tossing = ref(false)
+const jiaoState = ref('idle')
+const landKey = ref(0)
 
 const confirmText = computed(() => {
   if (!jiao.value) return ''
   if (jiao.value.kind === 'sheng') return '神明应允，此签即为所求。'
   return jiao.value.kind === 'xiao' ? '笑筊：神明未明示，需重新求签。' : '阴筊：并非此签，需重新求签。'
+})
+const avatarMood = computed(() => {
+  if (jiaoState.value === 'tossing') return 'think'
+  if (!jiao.value) return 'idle'
+  return { sheng: 'nod', xiao: 'laugh', yin: 'shake' }[jiao.value.kind]
+})
+const avatarBubble = computed(() => {
+  if (jiaoState.value === 'tossing') return '……'
+  if (!jiao.value) return '掷筊问我'
+  return { sheng: '正是此签！', xiao: '再求一次～', yin: '不是这支' }[jiao.value.kind]
 })
 
 onLoad((q) => {
@@ -126,22 +144,30 @@ function shakeTube() {
     drawn.value = 1 + Math.floor(Math.random() * total)
     shaking.value = false
     uni.vibrateShort?.({ fail: () => {} })
-  }, 1400)
+  }, 1800)
+}
+
+function toConfirm() {
+  jiao.value = null
+  jiaoState.value = 'idle'
+  step.value = 'confirm'
 }
 
 function tossConfirm() {
-  if (tossing.value) return
-  tossing.value = true
+  if (jiaoState.value === 'tossing') return
+  jiaoState.value = 'tossing'
   setTimeout(() => {
     jiao.value = throwJiao()
-    tossing.value = false
-  }, 900)
+    landKey.value++
+    jiaoState.value = 'landed'
+  }, 1300)
 }
 
 function redraw() {
   attempt.value++
   drawn.value = 0
   jiao.value = null
+  jiaoState.value = 'idle'
   step.value = 'shake'
 }
 
@@ -149,6 +175,7 @@ function reset() {
   attempt.value = 1
   drawn.value = 0
   jiao.value = null
+  jiaoState.value = 'idle'
   step.value = 'choose'
 }
 
@@ -171,101 +198,204 @@ onHide(shake.stop)
   margin-bottom: 36rpx;
 }
 .chip {
-  padding: 12rpx 32rpx;
+  padding: 12rpx 28rpx;
   border-radius: 999rpx;
   border: 2rpx solid #ead7b0;
   background: #fffaf0;
   font-size: 28rpx;
+  transition: transform 0.2s;
 }
 .chip.on {
   background: $sb-red;
   border-color: $sb-red;
   color: #fff3d6;
+  transform: scale(1.06);
 }
-.deity.on {
+.god-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+.god-card {
+  position: relative;
+  width: calc(50% - 10rpx);
+  box-sizing: border-box;
+  padding: 24rpx 12rpx 20rpx;
+  text-align: center;
+  background: #fffaf0;
+  border: 3rpx solid #ead7b0;
+  border-radius: 24rpx;
+  transition: transform 0.2s;
+}
+.god-card.on {
   border-color: $sb-red;
-  box-shadow: 0 0 0 3rpx rgba(163, 22, 13, 0.25);
+  background: #fff0e0;
+  transform: translateY(-6rpx);
+  box-shadow: 0 10rpx 24rpx rgba(163, 22, 13, 0.18);
 }
-.deity-name {
+.god-name {
   font-size: 32rpx;
-  margin-bottom: 8rpx;
+  margin-top: 6rpx;
 }
 .tag {
-  margin-left: 12rpx;
+  position: absolute;
+  z-index: 3;
+  left: 16rpx;
+  top: 16rpx;
   font-size: 22rpx;
   color: #fff;
   background: $sb-gold;
-  padding: 2rpx 12rpx;
-  border-radius: 6rpx;
+  padding: 2rpx 14rpx;
+  border-radius: 8rpx;
+  animation: tagbeat 1.2s ease-in-out infinite;
+}
+@keyframes tagbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
 }
 .tips {
-  margin: 12rpx 0 32rpx;
+  margin: 28rpx 0 32rpx;
 }
 .center {
   text-align: center;
+}
+.ask-line {
+  margin-bottom: 40rpx;
 }
 .gap {
   margin: 24rpx 0;
 }
 .center-title {
   text-align: center;
-  font-size: 40rpx;
+  font-size: 38rpx;
   color: $sb-red;
-  letter-spacing: 6rpx;
-  margin: 16rpx 0 8rpx;
+  letter-spacing: 4rpx;
+  margin: 8rpx 0 24rpx;
+}
+.tube-wrap {
+  position: relative;
+  width: 220rpx;
+  height: 380rpx;
+  margin: 10rpx auto 20rpx;
 }
 .tube {
-  width: 220rpx;
-  margin: 60rpx auto 40rpx;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   transform-origin: 50% 100%;
 }
 .tube.shaking {
-  animation: shake 0.25s ease-in-out infinite alternate;
+  animation: tubeshake 0.22s ease-in-out infinite alternate;
 }
-@keyframes shake {
-  from { transform: rotate(-10deg); }
-  to { transform: rotate(10deg); }
+@keyframes tubeshake {
+  from { transform: rotate(-14deg) translateY(-8rpx); }
+  to { transform: rotate(14deg) translateY(0); }
 }
 .sticks {
-  display: flex;
-  justify-content: center;
-  height: 120rpx;
-  align-items: flex-end;
+  position: absolute;
+  left: 40rpx;
+  right: 40rpx;
+  bottom: 230rpx;
+  height: 140rpx;
 }
 .stick {
+  position: absolute;
+  bottom: 0;
   width: 14rpx;
-  height: 160rpx;
-  margin: 0 3rpx;
-  background: linear-gradient(#e9c27a, #c99a4a);
+  height: 150rpx;
   border-radius: 6rpx 6rpx 0 0;
+  background: linear-gradient(#f3d08a, #c99a4a);
   transform-origin: 50% 100%;
 }
-.tube-body {
+.stick::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 22rpx;
+  border-radius: 6rpx 6rpx 0 0;
+  background: $sb-red;
+}
+@for $i from 1 through 11 {
+  .s#{$i} {
+    left: #{($i - 1) * 12}rpx;
+    transform: rotate(#{($i - 6) * 3}deg);
+    height: #{130 + ($i * 7) % 30}rpx;
+  }
+}
+.stick.jiggle {
+  animation: jiggle 0.18s ease-in-out infinite alternate;
+}
+.s2.jiggle, .s5.jiggle, .s8.jiggle, .s11.jiggle { animation-delay: 0.09s; }
+@keyframes jiggle {
+  from { margin-bottom: 0; }
+  to { margin-bottom: 26rpx; }
+}
+.tube-img {
+  width: 220rpx;
+  display: block;
+  position: relative;
+}
+.flying-stick {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 230rpx;
+  width: 56rpx;
   height: 260rpx;
-  background: linear-gradient(90deg, $sb-red-dark, #c42a1c 50%, $sb-red-dark);
-  border-radius: 16rpx 16rpx 24rpx 24rpx;
-  color: $sb-gold;
-  font-size: 72rpx;
-  text-align: center;
-  line-height: 260rpx;
+  margin-left: -28rpx;
+  border-radius: 10rpx;
+  background: linear-gradient(#f6dc9e, #d6a75a);
+  border: 3rpx solid #a87a34;
+  box-shadow: 0 10rpx 24rpx rgba(110, 12, 6, 0.3);
+  animation: flyout 0.9s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+.stick-face {
+  writing-mode: vertical-rl;
+  color: $sb-red;
+  font-size: 30rpx;
+  font-weight: bold;
+  margin: 24rpx auto 0;
+  letter-spacing: 6rpx;
+}
+@keyframes flyout {
+  0% { transform: translateY(160rpx) rotate(0); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translate(150rpx, 40rpx) rotate(28deg); opacity: 1; }
 }
 .drawn {
   text-align: center;
   font-size: 32rpx;
-  margin-bottom: 32rpx;
+  margin-bottom: 28rpx;
+  animation: fadeup 0.5s ease-out 0.5s both;
+}
+@keyframes fadeup {
+  from { transform: translateY(20rpx); opacity: 0; }
+  to { transform: none; opacity: 1; }
 }
 .drawn-no {
   color: $sb-red;
   font-size: 44rpx;
 }
 .jiao-name {
-  font-size: 52rpx;
+  font-size: 56rpx;
   letter-spacing: 12rpx;
+  animation: stamp 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) 0.35s both;
+}
+@keyframes stamp {
+  from { transform: scale(2.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 .jiao-name.sheng { color: $sb-red; }
-.jiao-name.xiao { color: $sb-gold; }
+.jiao-name.xiao { color: #d08a1a; }
 .jiao-name.yin { color: #555; }
-.center + .btn {
-  margin-top: 32rpx;
+.glow {
+  animation: glow 1.4s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 6rpx 16rpx rgba(163, 22, 13, 0.3); }
+  50% { box-shadow: 0 0 36rpx rgba(255, 190, 60, 0.9); }
 }
 </style>

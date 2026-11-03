@@ -1,18 +1,22 @@
 <template>
   <view class="page" v-if="q">
+    <view class="cheer">
+      <DeityAvatar :id="q.deity.id" :size="180" :mood="cheerMood" :bubble="cheerText" />
+      <Sparkles v-if="LEVEL_SCORE[q.level] >= 4" />
+    </view>
     <view class="paper">
       <view class="paper-head">
         <text>{{ q.set.name }}</text>
         <text>第{{ cnNumber(q.no) }}签<text v-if="q.label"> · {{ q.label }}</text></text>
       </view>
-      <view class="level-row"><text class="level" :class="`level-${q.level}`">{{ q.level }}签</text></view>
+      <view class="level-row"><text class="level stamp" :class="`level-${q.level}`">{{ q.level }}签</text></view>
       <view class="poem">
-        <view v-for="(line, i) in q.poem" :key="i" class="poem-line">{{ line }}</view>
+        <view v-for="(line, i) in q.poem" :key="i" class="poem-line" :style="{ animationDelay: 0.7 + i * 0.35 + 's' }">{{ line }}</view>
       </view>
       <view v-if="q.title" class="story">典故：{{ q.title }}</view>
     </view>
 
-    <view class="card">
+    <view class="card rise">
       <view class="section-title">签意</view>
       <view class="text">{{ q.meaning }}</view>
     </view>
@@ -47,7 +51,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { TOPICS, topicName, getQian, cnNumber } from '../../utils/qian'
+import { TOPICS, topicName, getQian, cnNumber, LEVEL_SCORE } from '../../utils/qian'
+import DeityAvatar from '../../components/DeityAvatar.vue'
+import Sparkles from '../../components/Sparkles.vue'
 
 const q = ref(null)
 const topic = ref('')
@@ -58,6 +64,10 @@ onLoad((opts) => {
   if (q.value) uni.setNavigationBarTitle({ title: `${q.value.deity.name} · 第${cnNumber(q.value.no)}签` })
 })
 
+const CHEER = { 上上: ['laugh', '大吉大利！'], 上: ['nod', '是好签哦'], 中: ['idle', '平平稳稳'], 下: ['think', '莫急，慢慢来'], 下下: ['think', '静心守正，会转好'] }
+const cheerMood = computed(() => CHEER[q.value?.level]?.[0] || 'idle')
+const cheerText = computed(() => CHEER[q.value?.level]?.[1] || '')
+
 const otherTopics = computed(() => TOPICS.filter((t) => t.key !== topic.value && q.value?.topics[t.key]))
 
 const again = () => uni.redirectTo({ url: `/pages/qiuqian/qiuqian?deity=${q.value.deity.id}&topic=${topic.value}` })
@@ -65,7 +75,14 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 </script>
 
 <style lang="scss" scoped>
+.cheer {
+  position: relative;
+  margin-bottom: -30rpx;
+  z-index: 1;
+}
 .paper {
+  transform-origin: 50% 0;
+  animation: unroll 0.8s cubic-bezier(0.3, 1.2, 0.5, 1) both;
   background: linear-gradient(#fff6dc, #f7e6bd);
   border: 4rpx solid $sb-red;
   outline: 2rpx solid $sb-gold;
@@ -87,10 +104,33 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 .poem {
   text-align: center;
 }
+@keyframes unroll {
+  from { transform: scaleY(0.05); opacity: 0.4; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+.stamp {
+  animation: stamp 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) 0.55s both;
+}
+@keyframes stamp {
+  from { transform: scale(3) rotate(-20deg); opacity: 0; }
+  to { transform: scale(1) rotate(-4deg); opacity: 1; }
+}
+.rise {
+  animation: riseup 0.6s ease-out 1.8s both;
+}
+@keyframes riseup {
+  from { transform: translateY(40rpx); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
 .poem-line {
+  animation: ink 0.6s ease-out both;
   font-size: 40rpx;
   letter-spacing: 8rpx;
   line-height: 2;
+}
+@keyframes ink {
+  from { opacity: 0; letter-spacing: 30rpx; filter: blur(4rpx); }
+  to { opacity: 1; letter-spacing: 8rpx; filter: blur(0); }
 }
 .story {
   text-align: center;
