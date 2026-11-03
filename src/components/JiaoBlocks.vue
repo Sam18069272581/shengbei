@@ -54,7 +54,7 @@ const sheng = computed(() => props.blocks[0] !== props.blocks[1])
 .img {
   width: 96rpx;
   display: block;
-  filter: drop-shadow(0 10rpx 8rpx rgba(80, 10, 0, 0.3));
+  filter: drop-shadow(0 10rpx 8rpx rgba(0, 0, 0, 0.3));
 }
 .img.mirror {
   transform: scaleX(-1);
@@ -101,6 +101,6 @@ const sheng = computed(() => props.blocks[0] !== props.blocks[1])
   bottom: 24rpx;
   height: 24rpx;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(110, 12, 6, 0.18), transparent 70%);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.18), transparent 70%);
 }
 </style>

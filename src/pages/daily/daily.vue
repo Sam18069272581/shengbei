@@ -31,7 +31,8 @@
 
     <view class="card qian-card" v-if="f.qian" @click="openQian">
       <view class="qian-god"><DeityAvatar :id="f.qian.deityId" :size="140" /></view>
-      <view class="section-title">今日一签 · {{ f.qian.deityName }} 第{{ cnNumber(f.qian.no) }}签</view>
+      <view class="section-title">今日一签</view>
+      <view class="muted qian-from">{{ f.qian.deityName }} · 第{{ cnNumber(f.qian.no) }}签</view>
       <view class="poem">
         <text>{{ poemText }}</text>
       </view>
@@ -65,7 +66,7 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 }
 .star {
   display: inline-block;
-  color: #e9dcc0;
+  color: rgba(212, 175, 110, 0.22);
   font-size: 44rpx;
   margin-left: 6rpx;
   animation: starpop 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) both;
@@ -80,6 +81,9 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 .qian-card {
   position: relative;
   padding-top: 20rpx;
+}
+.qian-from {
+  margin: -12rpx 0 16rpx;
 }
 .qian-god {
   float: right;
@@ -97,7 +101,7 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 .bar {
   flex: 1;
   height: 16rpx;
-  background: #f1e3c4;
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 8rpx;
   margin: 0 20rpx;
   overflow: hidden;
@@ -128,7 +132,7 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
   margin-bottom: 12rpx;
 }
 .yi-title { color: $sb-red; }
-.ji-title { color: #555; }
+.ji-title { color: #8c847c; }
 .item {
   font-size: 28rpx;
   line-height: 1.9;

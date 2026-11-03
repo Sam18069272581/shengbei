@@ -201,15 +201,15 @@ onHide(shake.stop)
 .chip {
   padding: 12rpx 28rpx;
   border-radius: 999rpx;
-  border: 2rpx solid #ead7b0;
-  background: #fffaf0;
+  border: 2rpx solid $sb-line;
+  background: $sb-surface;
   font-size: 28rpx;
   transition: transform 0.2s;
 }
 .chip.on {
   background: $sb-red;
   border-color: $sb-red;
-  color: #fff3d6;
+  color: #1a1410;
   transform: scale(1.06);
 }
 .god-grid {
@@ -223,16 +223,16 @@ onHide(shake.stop)
   box-sizing: border-box;
   padding: 24rpx 12rpx 20rpx;
   text-align: center;
-  background: #fffaf0;
-  border: 3rpx solid #ead7b0;
+  background: $sb-surface;
+  border: 3rpx solid $sb-line;
   border-radius: 24rpx;
   transition: transform 0.2s;
 }
 .god-card.on {
   border-color: $sb-red;
-  background: #fff0e0;
+  background: rgba(212, 175, 110, 0.1);
   transform: translateY(-6rpx);
-  box-shadow: 0 10rpx 24rpx rgba(163, 22, 13, 0.18);
+  box-shadow: 0 10rpx 24rpx rgba(212, 175, 110, 0.18);
 }
 .god-name {
   font-size: 32rpx;
@@ -244,7 +244,7 @@ onHide(shake.stop)
   left: 16rpx;
   top: 16rpx;
   font-size: 22rpx;
-  color: #fff;
+  color: #1a1410;
   background: $sb-gold;
   padding: 2rpx 14rpx;
   border-radius: 8rpx;
@@ -306,7 +306,7 @@ onHide(shake.stop)
   width: 14rpx;
   height: 150rpx;
   border-radius: 6rpx 6rpx 0 0;
-  background: linear-gradient(#f3d08a, #c99a4a);
+  background: linear-gradient(#d9bd86, #8f6a3a);
   transform-origin: 50% 100%;
 }
 .stick::before {
@@ -317,7 +317,7 @@ onHide(shake.stop)
   right: 0;
   height: 22rpx;
   border-radius: 6rpx 6rpx 0 0;
-  background: $sb-red;
+  background: $sb-vermilion;
 }
 @for $i from 1 through 11 {
   .s#{$i} {
@@ -348,14 +348,14 @@ onHide(shake.stop)
   height: 260rpx;
   margin-left: -28rpx;
   border-radius: 10rpx;
-  background: linear-gradient(#f6dc9e, #d6a75a);
+  background: linear-gradient(#efdcae, #c9a466);
   border: 3rpx solid #a87a34;
-  box-shadow: 0 10rpx 24rpx rgba(110, 12, 6, 0.3);
+  box-shadow: 0 10rpx 24rpx rgba(0, 0, 0, 0.3);
   animation: flyout 0.9s cubic-bezier(0.2, 1.3, 0.4, 1) both;
 }
 .stick-face {
   writing-mode: vertical-rl;
-  color: $sb-red;
+  color: #8e2f24;
   font-size: 30rpx;
   font-weight: bold;
   margin: 24rpx auto 0;
@@ -390,13 +390,13 @@ onHide(shake.stop)
   to { transform: scale(1); opacity: 1; }
 }
 .jiao-name.sheng { color: $sb-red; }
-.jiao-name.xiao { color: #d08a1a; }
-.jiao-name.yin { color: #555; }
+.jiao-name.xiao { color: #c9a35c; }
+.jiao-name.yin { color: #8c847c; }
 .glow {
   animation: glow 1.4s ease-in-out infinite;
 }
 @keyframes glow {
-  0%, 100% { box-shadow: 0 6rpx 16rpx rgba(163, 22, 13, 0.3); }
+  0%, 100% { box-shadow: 0 6rpx 16rpx rgba(212, 175, 110, 0.3); }
   50% { box-shadow: 0 0 36rpx rgba(255, 190, 60, 0.9); }
 }
 </style>

@@ -140,14 +140,14 @@ onHide(shake.stop)
   align-items: center;
   padding: 10rpx 0 8rpx;
   border-radius: 16rpx;
-  border: 2rpx solid #ead7b0;
-  background: #fffaf0;
+  border: 2rpx solid $sb-line;
+  background: $sb-surface;
   font-size: 22rpx;
 }
 .god-chip.on {
   border-color: $sb-red;
-  background: #fff0e0;
-  box-shadow: 0 0 0 3rpx rgba(163, 22, 13, 0.2);
+  background: rgba(212, 175, 110, 0.1);
+  box-shadow: 0 0 0 3rpx rgba(212, 175, 110, 0.2);
 }
 .god-chip-img {
   width: 70rpx;
@@ -174,14 +174,14 @@ onHide(shake.stop)
 }
 .input {
   margin: 20rpx 0;
-  border-bottom: 2rpx solid #ead7b0;
+  border-bottom: 2rpx solid $sb-line;
   padding: 12rpx 0;
   font-size: 28rpx;
   text-align: center;
 }
 .sheng { color: $sb-red; }
-.xiao { color: #d08a1a; }
-.yin { color: #555; }
+.xiao { color: #c9a35c; }
+.yin { color: #8c847c; }
 .streak {
   text-align: center;
   color: $sb-red;
@@ -195,8 +195,8 @@ onHide(shake.stop)
   line-height: 40rpx;
   margin-right: 8rpx;
   border-radius: 50%;
-  background: $sb-red;
-  color: #ffe9a8;
+  background: $sb-vermilion;
+  color: #f6e9d0;
   font-size: 22rpx;
   animation: stamp 0.4s ease-out both;
 }
@@ -212,7 +212,7 @@ onHide(shake.stop)
   justify-content: space-between;
   padding: 8rpx 0;
   font-size: 28rpx;
-  border-bottom: 1rpx dashed #ead7b0;
+  border-bottom: 1rpx dashed $sb-line;
 }
 .rule {
   font-size: 28rpx;

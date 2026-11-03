@@ -1,7 +1,18 @@
-/* 全局主题变量 */
-$sb-red: #a3160d;
-$sb-red-dark: #6e0c06;
-$sb-gold: #d9a441;
-$sb-paper: #fbf3e2;
-$sb-ink: #3a2a1a;
-$sb-muted: #8a7458;
+/* 全局主题：深墨底 + 金线 + 朱砂点缀 */
+$sb-bg: #14100c;
+$sb-bg-2: #1e1813;
+$sb-surface: rgba(255, 236, 200, 0.045);
+$sb-line: rgba(212, 175, 110, 0.26);
+$sb-gold: #d4af6e;
+$sb-gold-light: #f0d9a6;
+$sb-text: #ece0c8;
+$sb-muted: #9a8a72;
+$sb-vermilion: #c4473a;
+$sb-jade: #6f9c86;
+$sb-paper: #efe3c8;
+$sb-paper-ink: #2a1f16;
+
+/* 兼容旧变量名 */
+$sb-red: $sb-gold;
+$sb-red-dark: #3a1410;
+$sb-ink: $sb-text;

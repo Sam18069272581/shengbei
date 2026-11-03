@@ -84,19 +84,22 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 .paper {
   transform-origin: 50% 0;
   animation: unroll 0.8s cubic-bezier(0.3, 1.2, 0.5, 1) both;
-  background: linear-gradient(#fff6dc, #f7e6bd);
-  border: 4rpx solid $sb-red;
-  outline: 2rpx solid $sb-gold;
-  outline-offset: -14rpx;
-  border-radius: 12rpx;
-  padding: 40rpx 36rpx;
+  background: linear-gradient(180deg, #f3e8cf, #e4d3ad);
+  color: $sb-paper-ink;
+  border: 2rpx solid $sb-gold;
+  outline: 1rpx solid rgba(140, 100, 50, 0.5);
+  outline-offset: -16rpx;
+  border-radius: 4rpx;
+  padding: 48rpx 40rpx;
+  box-shadow: 0 30rpx 60rpx rgba(0, 0, 0, 0.5);
   margin-bottom: 28rpx;
 }
 .paper-head {
   display: flex;
   justify-content: space-between;
-  color: $sb-red;
-  font-size: 28rpx;
+  color: #8e2f24;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
 }
 .level-row {
   text-align: center;
@@ -125,7 +128,8 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 }
 .poem-line {
   animation: ink 0.6s ease-out both;
-  font-size: 40rpx;
+  color: $sb-paper-ink;
+  font-size: 42rpx;
   letter-spacing: 8rpx;
   line-height: 2;
 }
@@ -135,7 +139,7 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 }
 .story {
   text-align: center;
-  color: $sb-muted;
+  color: #7a6448;
   font-size: 24rpx;
   margin-top: 16rpx;
 }
@@ -149,7 +153,7 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 .topic-row {
   display: flex;
   padding: 12rpx 0;
-  border-bottom: 1rpx dashed #ead7b0;
+  border-bottom: 1rpx dashed $sb-line;
 }
 .topic-key {
   flex: none;

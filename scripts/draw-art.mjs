@@ -1,4 +1,5 @@
-// 生成 Q 版神明形象、筊杯、祥云等 SVG 到 src/static/art/
+// 生成神明像、筊杯、签筒、祥云等 SVG 到 src/static/art/
+// 风格：深色底上的金线描画，低饱和填色，神明为圆形徽章内的半身像
 // 改形象时改这里，然后运行 node scripts/draw-art.mjs
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
@@ -7,146 +8,147 @@ import { fileURLToPath } from 'node:url'
 const out = join(dirname(fileURLToPath(import.meta.url)), '../src/static/art')
 mkdirSync(out, { recursive: true })
 
-const INK = '#2b1d14'
-const SKIN = '#ffe2c8'
-const GOLD = '#e8b54a'
+const GOLD = '#d4af6e'
+const GOLD_LIGHT = '#f0d9a6'
+const INK = '#1a1410'
+const SKIN = '#ead8bc'
+const SKIN_SHADE = '#d2b994'
+const LINE = `stroke="${GOLD}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`
 
-const svg = (vb, body) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">
+const svg = (vb, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">
 <style>
-.eye{animation:blink 4.5s infinite;transform-box:fill-box;transform-origin:center}
-@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
-.sway{animation:sway 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
-@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.glow{animation:glow 4s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+.rays{animation:spin 40s linear infinite;transform-origin:100px 100px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sway{animation:sway 3.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 </style>
 ${body}
 </svg>`
 
-// 通用部件 -------------------------------------------------------------
-const robe = (color, trim) => `
-<path d="M58 142 Q100 128 142 142 L166 230 Q100 244 34 230 Z" fill="${color}"/>
-<path d="M58 142 Q100 128 142 142 L166 230 Q100 244 34 230 Z" fill="url(#shade)" opacity=".25"/>
-<path d="M82 138 L100 168 L118 138" fill="none" stroke="${trim}" stroke-width="7" stroke-linejoin="round"/>
-<path d="M44 214 Q100 226 156 214" fill="none" stroke="${trim}" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="54" cy="186" rx="22" ry="30" fill="${color}" transform="rotate(18 54 186)"/>
-<ellipse cx="146" cy="186" rx="22" ry="30" fill="${color}" transform="rotate(-18 146 186)"/>
-<circle cx="62" cy="206" r="10" fill="${SKIN}"/>
-<circle cx="138" cy="206" r="10" fill="${SKIN}"/>`
-
-const defs = `<defs>
-<linearGradient id="shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".0"/><stop offset=".5" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#000" stop-opacity=".3"/></linearGradient>
-<radialGradient id="aura" cx=".5" cy=".42" r=".5"><stop offset="0" stop-color="#ffe9a8" stop-opacity=".9"/><stop offset=".7" stop-color="#ffd36b" stop-opacity=".25"/><stop offset="1" stop-color="#ffd36b" stop-opacity="0"/></radialGradient>
+// 圆形徽章背景：深色渐变 + 双金环 + 缓慢旋转的光芒
+const medallion = (tint) => `<defs>
+<radialGradient id="bg" cx=".5" cy=".38" r=".62"><stop offset="0" stop-color="${tint}"/><stop offset="1" stop-color="${INK}"/></radialGradient>
+<radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset=".55" stop-color="${GOLD_LIGHT}" stop-opacity=".0"/><stop offset=".8" stop-color="${GOLD_LIGHT}" stop-opacity=".35"/><stop offset="1" stop-color="${GOLD_LIGHT}" stop-opacity="0"/></radialGradient>
+<linearGradient id="robeShade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#000" stop-opacity=".4"/></linearGradient>
+<clipPath id="clip"><circle cx="100" cy="100" r="92"/></clipPath>
 </defs>
-<circle cx="100" cy="100" r="98" fill="url(#aura)"/>`
+<circle cx="100" cy="100" r="98" fill="none" stroke="${GOLD}" stroke-width="1" opacity=".6"/>
+<circle cx="100" cy="100" r="92" fill="url(#bg)" stroke="${GOLD}" stroke-width="1.8"/>
+<g clip-path="url(#clip)">
+<g class="rays" opacity=".18">${Array.from({ length: 24 }, (_, i) => `<line x1="100" y1="100" x2="100" y2="0" stroke="${GOLD_LIGHT}" stroke-width="${i % 2 ? 0.6 : 1.4}" transform="rotate(${i * 15} 100 100)"/>`).join('')}</g>
+<circle class="glow" cx="100" cy="78" r="46" fill="url(#halo)"/>
+<circle cx="100" cy="78" r="38" fill="none" stroke="${GOLD}" stroke-width=".8" opacity=".5"/>`
+const medallionEnd = `</g>`
 
+// 半身袍服：肩线 + 交领
+const robe = (color, collar = GOLD) => `
+<path d="M28 200 Q34 136 72 124 Q100 134 128 124 Q166 136 172 200Z" fill="${color}" ${LINE}/>
+<path d="M28 200 Q34 136 72 124 Q100 134 128 124 Q166 136 172 200Z" fill="url(#robeShade)"/>
+<path d="M78 126 L100 166 L122 126" fill="none" stroke="${collar}" stroke-width="5"/>
+<path d="M78 126 L100 166 L122 126" fill="none" ${LINE}/>
+<path d="M58 168 Q66 160 74 168 M126 168 Q134 160 142 168" fill="none" stroke="${GOLD}" stroke-width="1" opacity=".7"/>`
+
+const neck = `<path d="M90 112 L90 128 Q100 134 110 128 L110 112Z" fill="${SKIN_SHADE}"/>`
+
+// 头部：椭圆脸，眼为安详的弧线
 const head = (skin = SKIN) => `
-<circle cx="48" cy="100" r="9" fill="${skin}"/><circle cx="152" cy="100" r="9" fill="${skin}"/>
-<circle cx="100" cy="94" r="52" fill="${skin}"/>`
+<ellipse cx="100" cy="86" rx="27" ry="31" fill="${skin}" ${LINE}/>
+<path d="M85 88 Q90 92 95 88 M105 88 Q110 92 115 88" fill="none" stroke="${INK}" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M98 96 Q100 99 102 96" fill="none" stroke="${SKIN_SHADE}" stroke-width="1.4" stroke-linecap="round"/>
+<path d="M95 104 Q100 106 105 104" fill="none" stroke="#9a3b2e" stroke-width="1.8" stroke-linecap="round"/>
+<circle cx="100" cy="76" r="1.6" fill="#b8382a"/>`
 
-const face = ({ brows = '', blush = '#ff9a8a', mouth = 'M91 117 Q100 126 109 117' } = {}) => `
-<ellipse class="eye" cx="82" cy="100" rx="5.5" ry="7.5" fill="${INK}"/>
-<ellipse class="eye" cx="118" cy="100" rx="5.5" ry="7.5" fill="${INK}"/>
-<circle cx="84" cy="97" r="2" fill="#fff"/><circle cx="120" cy="97" r="2" fill="#fff"/>
-<ellipse cx="70" cy="114" rx="9" ry="5" fill="${blush}" opacity=".55"/>
-<ellipse cx="130" cy="114" rx="9" ry="5" fill="${blush}" opacity=".55"/>
-${brows}
-<path d="${mouth}" fill="none" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`
-
-const hairCap = (c) => `<path d="M48 96 Q48 40 100 40 Q152 40 152 96 Q146 70 100 66 Q54 70 48 96Z" fill="${c}"/>`
-
-// 妈祖：红衣金冠，冠垂珠串 -------------------------------------------------
-const mazu = svg('0 0 200 240', `${defs}
-${robe('#c8322a', GOLD)}
-<path d="M48 96 Q40 140 58 150 L62 110Z M152 96 Q160 140 142 150 L138 110Z" fill="${INK}"/>
+// 妈祖：朱红袍、凤冠垂旒
+const mazu = svg('0 0 200 200', `${medallion('#4a1f1a')}
+${robe('#6e2219')}
+${neck}
+<path d="M72 84 Q68 120 80 132 L86 96Z M128 84 Q132 120 120 132 L114 96Z" fill="${INK}" ${LINE}/>
 ${head()}
-${hairCap(INK)}
-${face()}
-<g>
-<path d="M56 62 Q100 48 144 62 L140 74 Q100 62 60 74Z" fill="${GOLD}"/>
-<path d="M62 62 L70 34 L84 54 L100 22 L116 54 L130 34 L138 62Z" fill="${GOLD}" stroke="#c98f22" stroke-width="2"/>
-<circle cx="100" cy="44" r="7" fill="#e0473a"/><circle cx="74" cy="50" r="4" fill="#4fb0a0"/><circle cx="126" cy="50" r="4" fill="#4fb0a0"/>
-</g>
-<g class="sway"><line x1="60" y1="72" x2="56" y2="118" stroke="${GOLD}" stroke-width="2"/><circle cx="58" cy="90" r="3" fill="#fff6d0"/><circle cx="57" cy="104" r="3" fill="#fff6d0"/><circle cx="56" cy="118" r="4" fill="#e0473a"/></g>
-<g class="sway"><line x1="140" y1="72" x2="144" y2="118" stroke="${GOLD}" stroke-width="2"/><circle cx="142" cy="90" r="3" fill="#fff6d0"/><circle cx="143" cy="104" r="3" fill="#fff6d0"/><circle cx="144" cy="118" r="4" fill="#e0473a"/></g>
-<g transform="rotate(-30 140 200)"><rect x="137" y="168" width="6" height="44" rx="3" fill="${GOLD}"/><path d="M128 170 q12 -22 24 0 q-12 8 -24 0Z" fill="${GOLD}" stroke="#c98f22" stroke-width="2"/></g>`)
+<path d="M73 74 Q74 50 100 48 Q126 50 127 74 Q114 62 100 62 Q86 62 73 74Z" fill="${INK}"/>
+<path d="M70 62 L76 38 L88 52 L100 30 L112 52 L124 38 L130 62 Q100 54 70 62Z" fill="${GOLD}" stroke="${GOLD_LIGHT}" stroke-width="1"/>
+<path d="M70 62 Q100 54 130 62" fill="none" stroke="${GOLD_LIGHT}" stroke-width="1.2"/>
+<circle cx="100" cy="44" r="4" fill="#b8382a" stroke="${GOLD_LIGHT}" stroke-width="1"/>
+${[80, 88, 112, 120].map((x) => `<g class="sway"><line x1="${x}" y1="60" x2="${x}" y2="${x === 80 || x === 120 ? 84 : 72}" stroke="${GOLD}" stroke-width=".8"/><circle cx="${x}" cy="${x === 80 || x === 120 ? 84 : 72}" r="1.8" fill="${GOLD_LIGHT}"/></g>`).join('')}
+${medallionEnd}`)
 
-// 文昌帝君：蓝袍幞头，手执毛笔 ----------------------------------------------
-const wenchang = svg('0 0 200 240', `${defs}
-${robe('#3b6fb6', '#f3d9a4')}
+// 文昌帝君：青袍、展脚幞头、执笔
+const wenchang = svg('0 0 200 200', `${medallion('#1c2a3c')}
+${robe('#1f3550')}
+${neck}
 ${head()}
-${hairCap(INK)}
-${face({ brows: `<path d="M72 86 Q82 82 90 86 M110 86 Q118 82 128 86" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`, mouth: 'M93 118 Q100 124 107 118' })}
-<path d="M92 128 Q100 140 108 128" fill="${INK}"/>
-<path d="M58 66 Q60 30 100 28 Q140 30 142 66Z" fill="#1f1a24"/>
-<rect x="56" y="60" width="88" height="10" rx="4" fill="#1f1a24"/>
-<rect x="10" y="58" width="48" height="6" rx="3" fill="#1f1a24"/>
-<rect x="142" y="58" width="48" height="6" rx="3" fill="#1f1a24"/>
-<circle cx="100" cy="48" r="5" fill="${GOLD}"/>
-<g transform="rotate(-25 140 200)"><rect x="136" y="150" width="7" height="58" rx="3" fill="#8a5a2b"/><path d="M136 150 L139.5 132 L143 150Z" fill="${INK}"/></g>
-<rect x="44" y="196" width="30" height="16" rx="4" fill="#f6ecd2" stroke="#c9a46a" stroke-width="2"/>`)
+<path d="M73 70 Q74 46 100 44 Q126 46 127 70Z" fill="${INK}" ${LINE}/>
+<rect x="72" y="66" width="56" height="7" rx="2" fill="${INK}" ${LINE}/>
+<path d="M72 69 L30 64 M128 69 L170 64" stroke="${GOLD}" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M92 110 Q100 116 108 110 Q104 124 100 126 Q96 124 92 110Z" fill="${INK}"/>
+<g transform="rotate(-20 142 160)"><rect x="139" y="122" width="5" height="52" rx="2" fill="#7a5530" ${LINE}/><path d="M139 122 L141.5 108 L144 122Z" fill="${INK}" ${LINE}/></g>
+${medallionEnd}`)
 
-// 关圣帝君：红脸长髯，绿袍绿巾，青龙偃月刀 -----------------------------------
-const guandi = svg('0 0 200 240', `${defs}
-<g><line x1="24" y1="236" x2="24" y2="70" stroke="#8a5a2b" stroke-width="6" stroke-linecap="round"/>
-<path d="M24 70 Q4 40 20 14 Q40 40 30 76Z" fill="#cfd8dc" stroke="#7a8a90" stroke-width="2"/>
-<path d="M20 76 h14" stroke="${GOLD}" stroke-width="6"/></g>
-${robe('#2f7d4f', GOLD)}
-${head('#d9493a')}
-${face({
-  blush: '#a8281c',
-  brows: `<path d="M68 88 L92 92 M132 88 L108 92" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>`,
-  mouth: 'M93 117 Q100 121 107 117',
-})}
-<path d="M76 118 Q78 150 100 186 Q122 150 124 118 Q112 128 100 126 Q88 128 76 118Z" fill="${INK}"/>
-<path d="M84 114 Q92 110 100 114 Q108 110 116 114" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>
-<path d="M50 84 Q52 34 100 32 Q148 34 150 84 Q100 62 50 84Z" fill="#2f7d4f"/>
-<path d="M50 84 Q100 62 150 84" stroke="${GOLD}" stroke-width="4" fill="none"/>
-<circle cx="100" cy="30" r="9" fill="#e0473a"/>`)
+// 关圣帝君：绿袍、红面、长髯、青龙偃月刀
+const guandi = svg('0 0 200 200', `${medallion('#16302a')}
+<line x1="40" y1="200" x2="40" y2="58" stroke="${GOLD}" stroke-width="2.4"/>
+<path d="M40 60 Q24 40 34 18 Q52 40 44 66Z" fill="#c9d0d2" stroke="${GOLD}" stroke-width="1.2"/>
+${robe('#1d4a3a')}
+${neck}
+${head('#b5503f')}
+<path d="M84 84 L95 86 M116 84 L105 86" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M80 100 Q82 130 100 156 Q118 130 120 100 Q110 108 100 107 Q90 108 80 100Z" fill="${INK}" ${LINE}/>
+<path d="M88 100 Q100 94 112 100" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M70 78 Q72 46 100 44 Q128 46 130 78 Q100 62 70 78Z" fill="#1d4a3a" ${LINE}/>
+<path d="M70 78 Q100 62 130 78" fill="none" stroke="${GOLD}" stroke-width="2"/>
+<circle cx="100" cy="42" r="5" fill="#b8382a" stroke="${GOLD_LIGHT}" stroke-width="1"/>
+${medallionEnd}`)
 
-// 月下老人：白发白须红袍，手持红线团与拐杖 -----------------------------------
-const yuelao = svg('0 0 200 240', `${defs}
-<line x1="170" y1="236" x2="160" y2="120" stroke="#8a5a2b" stroke-width="6" stroke-linecap="round"/>
-<ellipse cx="160" cy="114" rx="9" ry="12" fill="${GOLD}"/><circle cx="160" cy="100" r="6" fill="${GOLD}"/>
-${robe('#d23c3c', '#ffe6a8')}
+// 月下老人：绛红袍、白发白须、红线
+const yuelao = svg('0 0 200 200', `${medallion('#3e1c22')}
+${robe('#6a2028')}
+${neck}
 ${head()}
-<path d="M50 100 Q44 70 62 60 Q58 84 66 92Z M150 100 Q156 70 138 60 Q142 84 134 92Z" fill="#f4f1ea"/>
-<ellipse cx="100" cy="40" rx="14" ry="11" fill="#f4f1ea"/>
-${face({ brows: `<path d="M70 88 Q80 80 90 88 M110 88 Q120 80 130 88" stroke="#f4f1ea" stroke-width="6" fill="none" stroke-linecap="round"/>`, mouth: 'M92 116 Q100 123 108 116' })}
-<path d="M74 118 Q80 164 100 196 Q120 164 126 118 Q112 130 100 126 Q88 130 74 118Z" fill="#f4f1ea"/>
-<path d="M82 116 Q100 106 118 116" stroke="#f4f1ea" stroke-width="6" fill="none" stroke-linecap="round"/>
-<circle cx="54" cy="206" r="14" fill="#e0473a"/>
-<path d="M44 200 Q54 212 64 200 M42 208 Q54 218 66 208" stroke="#a3160d" stroke-width="2" fill="none"/>
-<path class="sway" d="M54 220 Q40 232 58 236 Q78 238 70 226" stroke="#e0473a" stroke-width="2.5" fill="none"/>`)
+<path d="M74 82 Q70 62 82 56 Q80 72 86 78Z M126 82 Q130 62 118 56 Q120 72 114 78Z" fill="#efe9de" ${LINE}/>
+<ellipse cx="100" cy="54" rx="12" ry="8" fill="#efe9de" ${LINE}/>
+<path d="M84 82 Q90 77 95 82 M105 82 Q110 77 116 82" stroke="#efe9de" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M80 100 Q84 140 100 168 Q116 140 120 100 Q110 110 100 107 Q90 110 80 100Z" fill="#efe9de" ${LINE}/>
+<path d="M88 100 Q100 93 112 100" fill="none" stroke="#efe9de" stroke-width="3" stroke-linecap="round"/>
+<path class="sway" d="M150 120 Q170 140 150 156 Q132 170 152 186 Q164 194 160 200" fill="none" stroke="#c0392b" stroke-width="1.8"/>
+<circle cx="150" cy="118" r="7" fill="#9e2a22" ${LINE}/>
+${medallionEnd}`)
 
-// 筊杯：新月形，平面（木色）与凸面（红漆）-------------------------------------
+// 筊杯：新月形，平面为木色，凸面为朱漆，金色描边
 const jiaoPath = 'M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z'
 const jiaoFlat = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<path d="${jiaoPath}" fill="#f0d29a" stroke="#a3160d" stroke-width="4"/>
-<path d="M58 30 C44 60 40 120 58 166" stroke="#c99a4a" stroke-width="3" fill="none" opacity=".7"/>
-<path d="M44 36 C30 70 28 120 44 158" stroke="#c99a4a" stroke-width="2" fill="none" opacity=".5"/>
+<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c79a62"/><stop offset="1" stop-color="#e8cc98"/></linearGradient></defs>
+<path d="${jiaoPath}" fill="url(#w)" stroke="${GOLD}" stroke-width="2"/>
+<path d="M54 30 C40 62 36 120 54 166 M40 44 C28 76 28 120 40 154" stroke="#9c7442" stroke-width="1.2" fill="none" opacity=".6"/>
 </svg>`
 const jiaoRound = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<defs><radialGradient id="g" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#ef6a5a"/><stop offset=".55" stop-color="#b81d12"/><stop offset="1" stop-color="#6e0c06"/></radialGradient></defs>
-<path d="${jiaoPath}" fill="url(#g)" stroke="#6e0c06" stroke-width="3"/>
-<ellipse cx="34" cy="60" rx="6" ry="20" fill="#fff" opacity=".35"/>
+<defs><radialGradient id="g" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#b8443a"/><stop offset=".5" stop-color="#7e1d16"/><stop offset="1" stop-color="#3a0b08"/></radialGradient></defs>
+<path d="${jiaoPath}" fill="url(#g)" stroke="${GOLD}" stroke-width="2"/>
+<path d="M30 40 C20 70 20 110 28 140" stroke="#fff" stroke-width="3" fill="none" opacity=".18" stroke-linecap="round"/>
 </svg>`
 
-// 祥云 ---------------------------------------------------------------------
-const cloud = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 70">
-<path d="M20 58 Q2 58 6 42 Q10 28 28 32 Q30 12 52 14 Q66 0 86 10 Q104 2 116 18 Q140 14 144 34 Q160 38 154 52 Q150 60 136 58Z" fill="#fff8e6" stroke="#e8c98a" stroke-width="3"/>
-<path d="M40 44 q10 -12 22 -2 M92 40 q12 -14 26 -2" stroke="#e8c98a" stroke-width="3" fill="none" stroke-linecap="round"/>
+// 祥云：金色线描
+const cloud = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+<path d="M10 50 Q0 50 4 40 Q8 30 22 33 Q22 16 42 16 Q54 4 72 12 Q88 4 100 18 Q122 14 126 32 Q144 32 146 44 Q148 52 136 50Z M40 40 q10 -12 20 -2 q10 10 -2 14 M92 36 q12 -12 22 0" fill="none" stroke="${GOLD}" stroke-width="1.4" stroke-linecap="round"/>
 </svg>`
 
-// 签筒 ---------------------------------------------------------------------
+// 签筒：乌木漆金
 const tube = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200">
-<defs><linearGradient id="t" x1="0" x2="1"><stop offset="0" stop-color="#6e0c06"/><stop offset=".45" stop-color="#d23c2c"/><stop offset="1" stop-color="#6e0c06"/></linearGradient></defs>
-<path d="M22 20 L138 20 L130 190 Q80 200 30 190Z" fill="url(#t)"/>
-<ellipse cx="80" cy="20" rx="58" ry="12" fill="#4a0804"/>
-<rect x="22" y="40" width="116" height="10" fill="${GOLD}"/><rect x="26" y="160" width="108" height="10" fill="${GOLD}"/>
-<circle cx="80" cy="105" r="34" fill="none" stroke="${GOLD}" stroke-width="4"/>
-<text x="80" y="120" font-size="42" text-anchor="middle" fill="${GOLD}" font-family="serif">签</text>
+<defs><linearGradient id="t" x1="0" x2="1"><stop offset="0" stop-color="#1a1210"/><stop offset=".45" stop-color="#4a2a1e"/><stop offset="1" stop-color="#140e0c"/></linearGradient></defs>
+<path d="M24 20 L136 20 L128 192 Q80 200 32 192Z" fill="url(#t)" stroke="${GOLD}" stroke-width="1.6"/>
+<ellipse cx="80" cy="20" rx="56" ry="10" fill="#0e0907" stroke="${GOLD}" stroke-width="1.6"/>
+<path d="M27 42 L133 42 M30 168 L130 168" stroke="${GOLD}" stroke-width="1"/>
+<path d="M28 48 L132 48 M30 162 L130 162" stroke="${GOLD}" stroke-width=".6" opacity=".7"/>
+<circle cx="80" cy="105" r="30" fill="none" stroke="${GOLD}" stroke-width="1.2"/>
+<circle cx="80" cy="105" r="25" fill="none" stroke="${GOLD}" stroke-width=".6" opacity=".7"/>
+<text x="80" y="117" font-size="32" text-anchor="middle" fill="${GOLD}" font-family="'Songti SC','STSong','Noto Serif SC',serif">签</text>
 </svg>`
 
-const files = { 'mazu.svg': mazu, 'wenchang.svg': wenchang, 'guandi.svg': guandi, 'yuelao.svg': yuelao, 'jiao-flat.svg': jiaoFlat, 'jiao-round.svg': jiaoRound, 'cloud.svg': cloud, 'tube.svg': tube }
+// 背景纹样：回纹边角
+const corner = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+<path d="M2 38 V2 H38 M8 38 V8 H38 M8 20 H20 V8" fill="none" stroke="${GOLD}" stroke-width="1.2"/>
+</svg>`
+
+const files = { 'mazu.svg': mazu, 'wenchang.svg': wenchang, 'guandi.svg': guandi, 'yuelao.svg': yuelao, 'jiao-flat.svg': jiaoFlat, 'jiao-round.svg': jiaoRound, 'cloud.svg': cloud, 'tube.svg': tube, 'corner.svg': corner }
 for (const [name, content] of Object.entries(files)) writeFileSync(join(out, name), content)
 console.log('wrote', Object.keys(files).join(', '))

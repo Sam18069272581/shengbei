@@ -98,7 +98,7 @@ const go = (url) => uni.navigateTo({ url })
   text-align: center;
   margin: -32rpx -32rpx 24rpx;
   padding: 40rpx 32rpx 20rpx;
-  background: linear-gradient(180deg, #fde9c3, $sb-paper);
+  background: transparent;
 }
 .hero-title {
   position: relative;
@@ -106,7 +106,10 @@ const go = (url) => uni.navigateTo({ url })
   color: $sb-red;
   letter-spacing: 24rpx;
   font-weight: bold;
-  text-shadow: 0 4rpx 0 #f3c766;
+  background: linear-gradient(180deg, #f6e3b4, #b98f4e);
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: normal;
 }
 .hero-sub {
   position: relative;
@@ -149,7 +152,7 @@ const go = (url) => uni.navigateTo({ url })
   letter-spacing: 6rpx;
 }
 .star {
-  color: #e9dcc0;
+  color: rgba(212, 175, 110, 0.22);
   display: inline-block;
   animation: starpop 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) both;
 }
@@ -181,12 +184,13 @@ const go = (url) => uni.navigateTo({ url })
 }
 .entry {
   flex: 1;
-  background: linear-gradient(160deg, #c42a1c, $sb-red-dark);
-  color: #fff3d6;
+  background: linear-gradient(160deg, #2a1f17, #17110d);
+  border: 1rpx solid $sb-line;
+  color: $sb-gold-light;
   border-radius: 24rpx;
   padding: 28rpx 20rpx;
   text-align: center;
-  box-shadow: 0 10rpx 20rpx rgba(110, 12, 6, 0.25);
+  box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.25);
 }
 .entry:active {
   transform: scale(0.96);
@@ -228,7 +232,7 @@ const go = (url) => uni.navigateTo({ url })
 }
 .entry-sub {
   font-size: 22rpx;
-  color: #f0cf9a;
+  color: $sb-muted;
 }
 .topics {
   display: flex;
@@ -239,8 +243,8 @@ const go = (url) => uni.navigateTo({ url })
 .topic {
   width: 30%;
   flex-grow: 1;
-  background: #fffaf0;
-  border: 2rpx solid #ead7b0;
+  background: $sb-surface;
+  border: 2rpx solid $sb-line;
   border-radius: 16rpx;
   padding: 20rpx 0;
   text-align: center;

@@ -37,7 +37,7 @@ defineProps({
   height: 18rpx;
   margin: -6rpx auto 0;
   border-radius: 50%;
-  background: rgba(110, 12, 6, 0.15);
+  background: radial-gradient(ellipse, rgba(212, 175, 110, 0.25), transparent 70%);
   animation: shadow 3.2s ease-in-out infinite;
 }
 .mood-nod { animation: nod 0.5s ease-in-out 3, float 3.2s ease-in-out 1.5s infinite; }
@@ -76,14 +76,15 @@ defineProps({
   z-index: 2;
   right: -30rpx;
   top: -48rpx;
-  background: #fff;
-  border: 3rpx solid $sb-red;
-  color: $sb-red;
-  border-radius: 24rpx;
+  background: #231b14;
+  border: 1rpx solid $sb-gold;
+  color: $sb-gold-light;
+  border-radius: 6rpx;
+  letter-spacing: 2rpx;
   padding: 10rpx 22rpx;
-  font-size: 28rpx;
+  font-size: 24rpx;
   white-space: nowrap;
-  box-shadow: 0 6rpx 14rpx rgba(110, 12, 6, 0.15);
+  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.15);
   animation: pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both;
 }
 .bubble::after {
@@ -92,7 +93,7 @@ defineProps({
   left: 24rpx;
   bottom: -16rpx;
   border: 8rpx solid transparent;
-  border-top: 10rpx solid $sb-red;
+  border-top: 10rpx solid $sb-gold;
 }
 @keyframes pop {
   from { transform: scale(0); opacity: 0; }
