@@ -32,7 +32,7 @@
     <view class="card" v-if="f.qian" @click="openQian">
       <view class="section-title">今日一签 · {{ f.qian.deityName }} 第{{ cnNumber(f.qian.no) }}签</view>
       <view class="poem">
-        <text v-for="(l, i) in f.qian.poem" :key="i">{{ l }}{{ i < f.qian.poem.length - 1 ? '，' : '。' }}</text>
+        <text>{{ poemText }}</text>
       </view>
       <view class="muted">点击查看解签 ›</view>
     </view>
@@ -46,6 +46,10 @@ import { dailyFortune } from '../../utils/daily'
 import { cnNumber } from '../../utils/qian'
 
 const f = dailyFortune()
+// 有的签诗自带标点，有的没有：没有标点的句子补上逗号/句号
+const poemText = f.qian
+  ? f.qian.poem.map((l, i) => (/[，。！？；、]$/.test(l) ? l : l + (i < f.qian.poem.length - 1 ? '，' : '。'))).join('')
+  : ''
 const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qian.deityId}&no=${f.qian.no}` })
 </script>
 
