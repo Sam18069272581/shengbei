@@ -4,16 +4,16 @@
       <view class="muted">{{ f.date }}</view>
       <view class="overall">
         今日综合
-        <text class="stars">{{ '★'.repeat(f.overall) }}{{ '☆'.repeat(5 - f.overall) }}</text>
+        <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= f.overall }" :style="{ animationDelay: 0.2 + i * 0.15 + 's' }">★</text>
       </view>
       <view class="lucky muted">幸运色 {{ f.color }} · 幸运数字 {{ f.number }}</view>
     </view>
 
     <view class="card">
       <view class="section-title">分项运势</view>
-      <view v-for="a in f.aspects" :key="a.key" class="aspect">
+      <view v-for="(a, idx) in f.aspects" :key="a.key" class="aspect">
         <text class="aspect-name">{{ a.name }}</text>
-        <view class="bar"><view class="bar-fill" :style="{ width: a.stars * 20 + '%' }" /></view>
+        <view class="bar"><view class="bar-fill" :style="{ width: a.stars * 20 + '%', animationDelay: 0.3 + idx * 0.15 + 's' }" /></view>
         <text class="aspect-stars">{{ '★'.repeat(a.stars) }}</text>
       </view>
     </view>
@@ -29,8 +29,10 @@
       </view>
     </view>
 
-    <view class="card" v-if="f.qian" @click="openQian">
-      <view class="section-title">今日一签 · {{ f.qian.deityName }} 第{{ cnNumber(f.qian.no) }}签</view>
+    <view class="card qian-card" v-if="f.qian" @click="openQian">
+      <view class="qian-god"><DeityAvatar :id="f.qian.deityId" :size="140" /></view>
+      <view class="section-title">今日一签</view>
+      <view class="muted qian-from">{{ f.qian.deityName }} · 第{{ cnNumber(f.qian.no) }}签</view>
       <view class="poem">
         <text>{{ poemText }}</text>
       </view>
@@ -44,6 +46,7 @@
 <script setup>
 import { dailyFortune } from '../../utils/daily'
 import { cnNumber } from '../../utils/qian'
+import DeityAvatar from '../../components/DeityAvatar.vue'
 
 const f = dailyFortune()
 // 有的签诗自带标点，有的没有：没有标点的句子补上逗号/句号
@@ -61,10 +64,30 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
   font-size: 36rpx;
   margin: 12rpx 0;
 }
-.stars {
-  color: $sb-gold;
+.star {
+  display: inline-block;
+  color: rgba(212, 175, 110, 0.22);
   font-size: 44rpx;
-  margin-left: 12rpx;
+  margin-left: 6rpx;
+  animation: starpop 0.5s cubic-bezier(0.2, 1.8, 0.4, 1) both;
+}
+.star.on {
+  color: $sb-gold;
+}
+@keyframes starpop {
+  from { transform: scale(0) rotate(-90deg); }
+  to { transform: scale(1) rotate(0); }
+}
+.qian-card {
+  position: relative;
+  padding-top: 20rpx;
+}
+.qian-from {
+  margin: -12rpx 0 16rpx;
+}
+.qian-god {
+  float: right;
+  margin: 0 -10rpx 0 10rpx;
 }
 .aspect {
   display: flex;
@@ -78,7 +101,7 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 .bar {
   flex: 1;
   height: 16rpx;
-  background: #f1e3c4;
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 8rpx;
   margin: 0 20rpx;
   overflow: hidden;
@@ -86,6 +109,12 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 .bar-fill {
   height: 100%;
   background: linear-gradient(90deg, $sb-gold, $sb-red);
+  transform-origin: 0 50%;
+  animation: grow 0.8s ease-out both;
+}
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 .aspect-stars {
   width: 150rpx;
@@ -103,7 +132,7 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
   margin-bottom: 12rpx;
 }
 .yi-title { color: $sb-red; }
-.ji-title { color: #555; }
+.ji-title { color: #8c847c; }
 .item {
   font-size: 28rpx;
   line-height: 1.9;
