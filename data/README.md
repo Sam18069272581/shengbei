@@ -5,7 +5,7 @@ JSON 是唯一数据源（便于多人并行、Git 合并）。`npm run build:da
 
 1. 校验所有 `data/qian/*.json`；
 2. 生成 `data/qian.sqlite`（静态 SQL 库，可用任何 SQLite 工具查询）；
-3. 生成前端用的 `src/static/qian/<deity_id>.json` 和 `src/static/qian/index.json`。
+3. 生成前端用的 `src/generated/qian/<deity_id>.json` 和 `src/generated/qian/index.json`。
 
 ## 神明 id
 

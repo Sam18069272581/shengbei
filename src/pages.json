@@ -1,16 +1,15 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
-			}
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	}
+  "pages": [
+    { "path": "pages/index/index", "style": { "navigationBarTitleText": "圣杯" } },
+    { "path": "pages/jiao/jiao", "style": { "navigationBarTitleText": "掷筊问事" } },
+    { "path": "pages/qiuqian/qiuqian", "style": { "navigationBarTitleText": "求灵签" } },
+    { "path": "pages/result/result", "style": { "navigationBarTitleText": "解签" } },
+    { "path": "pages/daily/daily", "style": { "navigationBarTitleText": "今日运势" } }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "圣杯",
+    "navigationBarBackgroundColor": "#a3160d",
+    "backgroundColor": "#fbf3e2"
+  }
 }

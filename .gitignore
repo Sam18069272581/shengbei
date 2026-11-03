@@ -4,4 +4,4 @@ unpackage/
 *.log
 .DS_Store
 data/qian.sqlite
-src/static/qian/
+src/generated/qian/
