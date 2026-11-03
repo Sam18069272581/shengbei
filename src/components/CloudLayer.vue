@@ -1,12 +1,13 @@
 <template>
   <view class="clouds">
-    <image class="cloud c1" src="/static/art/cloud.svg" mode="widthFix" />
-    <image class="cloud c2" src="/static/art/cloud.svg" mode="widthFix" />
-    <image class="cloud c3" src="/static/art/cloud.svg" mode="widthFix" />
+    <image class="cloud c1" :src="art('cloud')" mode="widthFix" />
+    <image class="cloud c2" :src="art('cloud')" mode="widthFix" />
+    <image class="cloud c3" :src="art('cloud')" mode="widthFix" />
   </view>
 </template>
 
 <script setup>
+import { art } from '../utils/art'
 // 背景祥云，缓慢飘动
 </script>
 

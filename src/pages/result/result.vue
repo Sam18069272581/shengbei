@@ -77,6 +77,7 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 <style lang="scss" scoped>
 .cheer {
   position: relative;
+  padding-top: 44rpx;
   margin-bottom: -30rpx;
   z-index: 1;
 }

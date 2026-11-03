@@ -32,15 +32,15 @@
     <view class="entries">
       <view class="entry" @click="go('/pages/jiao/jiao')">
         <view class="entry-art jiao-art">
-          <image class="mini-jiao" src="/static/art/jiao-flat.svg" mode="widthFix" />
-          <image class="mini-jiao r" src="/static/art/jiao-round.svg" mode="widthFix" />
+          <image class="mini-jiao" :src="art('jiao-flat')" mode="widthFix" />
+          <image class="mini-jiao r" :src="art('jiao-round')" mode="widthFix" />
         </view>
         <view class="entry-name">掷筊问事</view>
         <view class="entry-sub">是或否，问神明一句</view>
       </view>
       <view class="entry" @click="go('/pages/qiuqian/qiuqian')">
         <view class="entry-art">
-          <image class="mini-tube" src="/static/art/tube.svg" mode="widthFix" />
+          <image class="mini-tube" :src="art('tube')" mode="widthFix" />
         </view>
         <view class="entry-name">求灵签</view>
         <view class="entry-sub">学业 · 工作 · 爱情</view>
@@ -60,6 +60,7 @@
 </template>
 
 <script setup>
+import { art } from '../../utils/art'
 import { ref } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
 import { TOPICS, listDeities } from '../../utils/qian'

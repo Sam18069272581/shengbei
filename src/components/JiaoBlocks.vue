@@ -11,7 +11,7 @@
         <image
           class="img"
           :class="{ mirror: i === 1 }"
-          :src="flat ? '/static/art/jiao-flat.svg' : '/static/art/jiao-round.svg'"
+          :src="flat ? art('jiao-flat') : art('jiao-round')"
           mode="widthFix"
         />
       </view>
@@ -21,6 +21,7 @@
 </template>
 
 <script setup>
+import { art } from '../utils/art'
 import { computed } from 'vue'
 import Sparkles from './Sparkles.vue'
 

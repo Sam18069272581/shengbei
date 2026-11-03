@@ -2,13 +2,14 @@
   <view class="deity-avatar" :style="{ width: size + 'rpx' }">
     <view v-if="bubble" :key="bubble" class="bubble">{{ bubble }}</view>
     <view class="body" :class="'mood-' + mood" :key="mood + moodKey">
-      <image class="img" :src="`/static/art/${id}.svg`" mode="widthFix" :style="{ width: size + 'rpx' }" />
+      <image class="img" :src="art(id)" mode="widthFix" :style="{ width: size + 'rpx' }" />
     </view>
     <view class="shadow" />
   </view>
 </template>
 
 <script setup>
+import { art } from '../utils/art'
 // Q 版神明形象。mood: idle 悬浮 / nod 点头 / shake 摇头 / laugh 开心跳 / think 歪头
 defineProps({
   id: { type: String, required: true },
@@ -73,8 +74,8 @@ defineProps({
 .bubble {
   position: absolute;
   z-index: 2;
-  right: -40rpx;
-  top: -10rpx;
+  right: -30rpx;
+  top: -48rpx;
   background: #fff;
   border: 3rpx solid $sb-red;
   color: $sb-red;

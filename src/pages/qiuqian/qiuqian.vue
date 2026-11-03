@@ -39,7 +39,7 @@
           <view class="sticks">
             <view v-for="i in 11" :key="i" class="stick" :class="['s' + i, { jiggle: shaking }]" />
           </view>
-          <image class="tube-img" src="/static/art/tube.svg" mode="widthFix" />
+          <image class="tube-img" :src="art('tube')" mode="widthFix" />
         </view>
         <view v-if="drawn" class="flying-stick">
           <view class="stick-face">第{{ cnNumber(drawn) }}签</view>
@@ -81,6 +81,7 @@
 </template>
 
 <script setup>
+import { art } from '../../utils/art'
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import JiaoBlocks from '../../components/JiaoBlocks.vue'
@@ -270,7 +271,7 @@ onHide(shake.stop)
   font-size: 38rpx;
   color: $sb-red;
   letter-spacing: 4rpx;
-  margin: 8rpx 0 24rpx;
+  margin: 8rpx 0 70rpx;
 }
 .tube-wrap {
   position: relative;

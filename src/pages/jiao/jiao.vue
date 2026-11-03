@@ -8,7 +8,7 @@
         :class="{ on: deityId === d.id }"
         @click="pickDeity(d.id)"
       >
-        <image class="god-chip-img" :src="`/static/art/${d.id}.svg`" mode="widthFix" />
+        <image class="god-chip-img" :src="art(d.id)" mode="widthFix" />
         <text>{{ d.name }}</text>
       </view>
     </view>
@@ -56,6 +56,7 @@
 </template>
 
 <script setup>
+import { art } from '../../utils/art'
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import JiaoBlocks from '../../components/JiaoBlocks.vue'
