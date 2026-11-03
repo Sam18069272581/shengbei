@@ -1,11 +1,11 @@
-// 校验 data/qian/*.json，生成 data/qian.sqlite 和 src/static/qian/*.json
+// 校验 data/qian/*.json，生成 data/qian.sqlite 和 src/generated/qian/*.json
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, rmSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const srcDir = join(root, 'data/qian')
-const outDir = join(root, 'src/static/qian')
+const outDir = join(root, 'src/generated/qian')
 const dbPath = join(root, 'data/qian.sqlite')
 
 const LEVELS = ['上上', '上', '中', '下', '下下']
