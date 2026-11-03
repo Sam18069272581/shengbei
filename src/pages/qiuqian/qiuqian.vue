@@ -35,14 +35,19 @@
       <view class="muted center ask-line">所问：{{ topicName(topic) }}　第 {{ attempt }} 次求签</view>
       <DeityAvatar :id="deityId" :size="220" :mood="shaking ? 'think' : drawn ? 'nod' : 'idle'" :bubble="shaking ? '诚心摇～' : drawn ? '就是这支' : '请摇签筒'" />
       <view class="tube-wrap" @click="shakeTube">
-        <view class="tube" :class="{ shaking }">
+        <view class="tube" :class="{ shaking, done: !!drawn }">
           <view class="sticks">
             <view v-for="i in 11" :key="i" class="stick" :class="['s' + i, { jiggle: shaking }]" />
           </view>
           <image class="tube-img" :src="art('tube')" mode="widthFix" />
         </view>
-        <view v-if="drawn" class="flying-stick">
-          <view class="stick-face">第{{ cnNumber(drawn) }}签</view>
+        <view v-if="drawn" class="flying-stick" />
+        <view v-if="drawn" class="qian-card">
+          <view class="qian-card-inner">
+            <view class="qc-deity">{{ deityName }}</view>
+            <view class="qc-no">第{{ cnNumber(drawn) }}签</view>
+            <view class="qc-seal">灵</view>
+          </view>
         </view>
       </view>
       <view v-if="drawn" class="drawn">
@@ -98,6 +103,7 @@ const step = ref('choose')
 const topic = ref('career')
 const deityId = ref('')
 const recommended = computed(() => recommendDeity(topic.value))
+const deityName = computed(() => deities.find((d) => d.id === deityId.value)?.name || '')
 
 const attempt = ref(1)
 const shaking = ref(false)
@@ -286,6 +292,11 @@ onHide(shake.stop)
   bottom: 0;
   transform-origin: 50% 100%;
 }
+.tube.done {
+  opacity: 0.3;
+  transform: translateY(30rpx) scale(0.9);
+  transition: all 0.6s ease 0.4s;
+}
 .tube.shaking {
   animation: tubeshake 0.22s ease-in-out infinite alternate;
 }
@@ -344,33 +355,84 @@ onHide(shake.stop)
   z-index: 4;
   left: 50%;
   bottom: 230rpx;
-  width: 56rpx;
-  height: 260rpx;
-  margin-left: -28rpx;
-  border-radius: 10rpx;
+  width: 22rpx;
+  height: 180rpx;
+  margin-left: -11rpx;
+  border-radius: 8rpx;
   background: linear-gradient(#efdcae, #c9a466);
-  border: 3rpx solid #a87a34;
-  box-shadow: 0 10rpx 24rpx rgba(0, 0, 0, 0.3);
-  animation: flyout 0.9s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  animation: stickout 0.8s cubic-bezier(0.3, 0.6, 0.4, 1) both;
 }
-.stick-face {
+@keyframes stickout {
+  0% { transform: translateY(120rpx) rotate(0); opacity: 1; }
+  60% { transform: translateY(-160rpx) rotate(540deg); opacity: 1; }
+  100% { transform: translateY(-180rpx) rotate(720deg) scale(0.2); opacity: 0; }
+}
+/* 签牌：从签支变成卡片，翻转亮出签号 */
+.qian-card {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 0;
+  width: 170rpx;
+  height: 300rpx;
+  margin-left: -85rpx;
+  perspective: 800rpx;
+}
+.qian-card-inner {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 10rpx;
+  background: linear-gradient(180deg, #f3e8cf, #dcc79c);
+  border: 2rpx solid $sb-gold;
+  box-shadow: 0 0 0 6rpx rgba(20, 16, 12, 0.9), 0 0 0 8rpx rgba(212, 175, 110, 0.6), 0 20rpx 50rpx rgba(0, 0, 0, 0.6), 0 0 60rpx rgba(240, 217, 166, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 22rpx;
+  animation: cardflip 0.9s cubic-bezier(0.2, 1.3, 0.4, 1) 0.65s both;
+}
+@keyframes cardflip {
+  0% { transform: translateY(80rpx) rotateY(90deg) scale(0.3); opacity: 0; }
+  60% { transform: translateY(-10rpx) rotateY(-12deg) scale(1.05); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+.qc-deity {
+  font-size: 20rpx;
+  color: #7a6448;
+  letter-spacing: 4rpx;
+}
+.qc-no {
   writing-mode: vertical-rl;
+  margin-top: 14rpx;
   color: #8e2f24;
-  font-size: 30rpx;
+  font-size: 40rpx;
   font-weight: bold;
-  margin: 24rpx auto 0;
-  letter-spacing: 6rpx;
+  letter-spacing: 8rpx;
 }
-@keyframes flyout {
-  0% { transform: translateY(160rpx) rotate(0); opacity: 0; }
-  40% { opacity: 1; }
-  100% { transform: translate(150rpx, 40rpx) rotate(28deg); opacity: 1; }
+.qc-seal {
+  position: absolute;
+  right: 14rpx;
+  bottom: 14rpx;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: #f6e9d0;
+  background: $sb-vermilion;
+  border-radius: 6rpx;
+  animation: seal 0.4s cubic-bezier(0.2, 1.8, 0.4, 1) 1.4s both;
+}
+@keyframes seal {
+  from { transform: scale(2.5) rotate(-20deg); opacity: 0; }
+  to { transform: rotate(-8deg); opacity: 1; }
 }
 .drawn {
   text-align: center;
   font-size: 32rpx;
   margin-bottom: 28rpx;
-  animation: fadeup 0.5s ease-out 0.5s both;
+  animation: fadeup 0.5s ease-out 1.3s both;
 }
 @keyframes fadeup {
   from { transform: translateY(20rpx); opacity: 0; }

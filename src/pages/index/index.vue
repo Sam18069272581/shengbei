@@ -2,7 +2,10 @@
   <view class="page">
     <view class="hero">
       <CloudLayer />
-      <view class="hero-title">圣 杯</view>
+      <view class="hero-title">
+        <text class="ht-char c1">圣</text><text class="ht-char c2">杯</text>
+      </view>
+      <view class="hero-line" />
       <view class="hero-sub">掷筊问事 · 求灵签 · 看今日运势</view>
       <view class="hero-gods">
         <view v-for="(d, i) in deities" :key="d.id" class="hero-god" :class="'g' + i" @click="go(`/pages/qiuqian/qiuqian?deity=${d.id}`)">
@@ -102,14 +105,33 @@ const go = (url) => uni.navigateTo({ url })
 }
 .hero-title {
   position: relative;
-  font-size: 84rpx;
-  color: $sb-red;
-  letter-spacing: 24rpx;
-  font-weight: bold;
+  font-size: 88rpx;
+}
+.ht-char {
+  display: inline-block;
   background: linear-gradient(180deg, #f6e3b4, #b98f4e);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
-  font-weight: normal;
+  margin: 0 14rpx;
+  animation: drop 0.8s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+.c2 { animation-delay: 0.15s; }
+@keyframes drop {
+  from { transform: translateY(-80rpx) scale(1.6); opacity: 0; filter: blur(6rpx); }
+  to { transform: none; opacity: 1; filter: blur(0); }
+}
+.hero-line {
+  position: relative;
+  width: 220rpx;
+  height: 2rpx;
+  margin: 6rpx auto 10rpx;
+  background: linear-gradient(90deg, transparent, #d4af6e, transparent);
+  animation: linegrow 1s ease-out 0.5s both;
+}
+@keyframes linegrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 .hero-sub {
   position: relative;

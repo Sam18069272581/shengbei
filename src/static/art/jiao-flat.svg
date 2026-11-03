@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c79a62"/><stop offset="1" stop-color="#e8cc98"/></linearGradient></defs>
-<path d="M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z" fill="url(#w)" stroke="#d4af6e" stroke-width="2"/>
-<path d="M54 30 C40 62 36 120 54 166 M40 44 C28 76 28 120 40 154" stroke="#9c7442" stroke-width="1.2" fill="none" opacity=".6"/>
+<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c79a62"/><stop offset="1" stop-color="#f0d6a2"/></linearGradient></defs>
+<path d="M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z" fill="url(#w)" stroke="#d4af6e" stroke-width="2.5"/>
+<path d="M54 30 C40 62 36 120 54 166 M40 44 C28 76 28 120 40 154" stroke="#9c7442" stroke-width="1.2" fill="none" opacity=".55"/>
 </svg>

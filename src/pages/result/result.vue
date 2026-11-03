@@ -4,16 +4,25 @@
       <DeityAvatar :id="q.deity.id" :size="180" :mood="cheerMood" :bubble="cheerText" />
       <Sparkles v-if="LEVEL_SCORE[q.level] >= 4" />
     </view>
-    <view class="paper">
-      <view class="paper-head">
-        <text>{{ q.set.name }}</text>
-        <text>第{{ cnNumber(q.no) }}签<text v-if="q.label"> · {{ q.label }}</text></text>
+    <view class="scroll">
+      <view class="rod top" />
+      <view class="paper">
+        <view class="paper-head">
+          <text>{{ q.set.name }}</text>
+          <text>第{{ cnNumber(q.no) }}签<text v-if="q.label"> · {{ q.label }}</text></text>
+        </view>
+        <view class="level-row">
+          <view class="stamp-wrap">
+            <text class="level stamp" :class="`level-${q.level}`">{{ q.level }}签</text>
+            <view v-for="i in 7" :key="i" class="ink" :class="'k' + i" />
+          </view>
+        </view>
+        <view class="poem">
+          <view v-for="(line, i) in q.poem" :key="i" class="poem-line" :style="{ animationDelay: 1.0 + i * 0.45 + 's' }">{{ line }}</view>
+        </view>
+        <view v-if="q.title" class="story">典故：{{ q.title }}</view>
       </view>
-      <view class="level-row"><text class="level stamp" :class="`level-${q.level}`">{{ q.level }}签</text></view>
-      <view class="poem">
-        <view v-for="(line, i) in q.poem" :key="i" class="poem-line" :style="{ animationDelay: 0.7 + i * 0.35 + 's' }">{{ line }}</view>
-      </view>
-      <view v-if="q.title" class="story">典故：{{ q.title }}</view>
+      <view class="rod bottom" />
     </view>
 
     <view class="card rise">
@@ -82,8 +91,7 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
   z-index: 1;
 }
 .paper {
-  transform-origin: 50% 0;
-  animation: unroll 0.8s cubic-bezier(0.3, 1.2, 0.5, 1) both;
+  animation: unroll 1s cubic-bezier(0.5, 0, 0.3, 1) 0.15s both;
   background: linear-gradient(180deg, #f3e8cf, #e4d3ad);
   color: $sb-paper-ink;
   border: 2rpx solid $sb-gold;
@@ -109,33 +117,96 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
   text-align: center;
 }
 @keyframes unroll {
-  from { transform: scaleY(0.05); opacity: 0.4; }
-  to { transform: scaleY(1); opacity: 1; }
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.scroll {
+  position: relative;
+  margin: 0 8rpx 36rpx;
+}
+.scroll .paper {
+  margin-bottom: 0;
+}
+.rod {
+  position: relative;
+  z-index: 2;
+  height: 26rpx;
+  margin: 0 -22rpx;
+  border-radius: 13rpx;
+  background: linear-gradient(180deg, #8a5a30, #4a2a14 60%, #2a170a);
+  box-shadow: 0 6rpx 14rpx rgba(0, 0, 0, 0.5);
+}
+.rod::before,
+.rod::after {
+  content: '';
+  position: absolute;
+  top: -4rpx;
+  width: 22rpx;
+  height: 34rpx;
+  border-radius: 8rpx;
+  background: linear-gradient(180deg, #f6e2b0, #b98f4e);
+}
+.rod::before { left: -10rpx; }
+.rod::after { right: -10rpx; }
+.rod.bottom {
+  animation: rodroll 1s cubic-bezier(0.5, 0, 0.3, 1) 0.15s both;
+}
+@keyframes rodroll {
+  from { transform: translateY(var(--h, -560rpx)); }
+  to { transform: none; }
+}
+.stamp-wrap {
+  position: relative;
+  display: inline-block;
+}
+.ink {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: $sb-vermilion;
+  opacity: 0;
+  animation: ink-splat 0.5s ease-out 0.95s both;
+}
+.k1 { --x: -70rpx; --y: -26rpx; }
+.k2 { --x: 72rpx; --y: -20rpx; width: 7rpx; height: 7rpx; }
+.k3 { --x: -60rpx; --y: 28rpx; width: 6rpx; height: 6rpx; }
+.k4 { --x: 66rpx; --y: 26rpx; }
+.k5 { --x: -90rpx; --y: 0; width: 5rpx; height: 5rpx; }
+.k6 { --x: 92rpx; --y: 4rpx; width: 6rpx; height: 6rpx; }
+.k7 { --x: 20rpx; --y: -40rpx; width: 5rpx; height: 5rpx; }
+@keyframes ink-splat {
+  0% { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  40% { opacity: 0.9; }
+  100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0.75; }
 }
 .stamp {
-  animation: stamp 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) 0.55s both;
+  animation: stamp 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) 0.75s both;
 }
 @keyframes stamp {
   from { transform: scale(3) rotate(-20deg); opacity: 0; }
   to { transform: scale(1) rotate(-4deg); opacity: 1; }
 }
 .rise {
-  animation: riseup 0.6s ease-out 1.8s both;
+  animation: riseup 0.6s ease-out 2.6s both;
 }
 @keyframes riseup {
   from { transform: translateY(40rpx); opacity: 0; }
   to { transform: none; opacity: 1; }
 }
 .poem-line {
-  animation: ink 0.6s ease-out both;
+  animation: ink 0.9s cubic-bezier(0.4, 0, 0.2, 1) both;
   color: $sb-paper-ink;
   font-size: 42rpx;
   letter-spacing: 8rpx;
   line-height: 2;
 }
+/* 诗句像毛笔一样从左往右逐行刷出 */
 @keyframes ink {
-  from { opacity: 0; letter-spacing: 30rpx; filter: blur(4rpx); }
-  to { opacity: 1; letter-spacing: 8rpx; filter: blur(0); }
+  0% { clip-path: inset(0 100% 0 0); opacity: 0.2; filter: blur(3rpx); }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; filter: blur(0); }
 }
 .story {
   text-align: center;
