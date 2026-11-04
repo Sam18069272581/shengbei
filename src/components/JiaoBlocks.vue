@@ -5,7 +5,7 @@
     <view v-if="state === 'landed'" :key="'d' + landKey" class="dust">
       <view v-for="i in 6" :key="i" class="puff" :class="'p' + i" />
     </view>
-    <view class="pair">
+    <view class="pair" :class="{ quake: state === 'landed' }" :key="'p' + landKey">
       <view v-for="(flat, i) in blocks" :key="i + '-' + landKey" class="slot">
         <!-- 抛起时的拖影 -->
         <block v-if="state === 'tossing'">
@@ -93,16 +93,16 @@ const sheng = computed(() => props.blocks[0] !== props.blocks[1])
   50% { transform: translateY(-12rpx) rotate(3deg); }
 }
 @keyframes toss0 {
-  0% { transform: translate(0, 0) rotate(0) scale(1, 1); }
-  10% { transform: translate(0, 0) rotate(0) scale(1.1, 0.85); }
-  50% { transform: translate(-40rpx, -240rpx) rotate(-400deg) scale(0.92, 1.08); }
-  100% { transform: translate(0, 0) rotate(-720deg) scale(1, 1); }
+  0% { transform: perspective(600px) translate(0, 0) rotateY(0) rotate(0) scale(1, 1); }
+  10% { transform: perspective(600px) translate(0, 0) rotateY(0) rotate(0) scale(1.1, 0.85); }
+  50% { transform: perspective(600px) translate(-40rpx, -260rpx) rotateY(540deg) rotate(-400deg) scale(0.92, 1.08); }
+  100% { transform: perspective(600px) translate(0, 0) rotateY(1080deg) rotate(-720deg) scale(1, 1); }
 }
 @keyframes toss1 {
-  0% { transform: translate(0, 0) rotate(0) scale(1, 1); }
-  10% { transform: translate(0, 0) rotate(0) scale(1.1, 0.85); }
-  50% { transform: translate(40rpx, -270rpx) rotate(380deg) scale(0.92, 1.08); }
-  100% { transform: translate(0, 0) rotate(720deg) scale(1, 1); }
+  0% { transform: perspective(600px) translate(0, 0) rotateY(0) rotate(0) scale(1, 1); }
+  10% { transform: perspective(600px) translate(0, 0) rotateY(0) rotate(0) scale(1.1, 0.85); }
+  50% { transform: perspective(600px) translate(40rpx, -290rpx) rotateY(-480deg) rotate(380deg) scale(0.92, 1.08); }
+  100% { transform: perspective(600px) translate(0, 0) rotateY(-1080deg) rotate(720deg) scale(1, 1); }
 }
 @keyframes land0 {
   0% { transform: translateY(-220rpx) rotate(-200deg) scale(0.9, 1.1); }
@@ -121,6 +121,17 @@ const sheng = computed(() => props.blocks[0] !== props.blocks[1])
   100% { transform: translateY(0) rotate(12deg) scale(1, 1); }
 }
 
+/* 落地瞬间整组轻震一下 */
+.quake {
+  animation: quake 0.42s linear 0.36s both;
+}
+@keyframes quake {
+  0%, 100% { transform: none; }
+  20% { transform: translate(-6rpx, 3rpx); }
+  40% { transform: translate(5rpx, -2rpx); }
+  60% { transform: translate(-3rpx, 1rpx); }
+  80% { transform: translate(2rpx, 0); }
+}
 /* 落地冲击：金色光圈 + 尘点 */
 .impact {
   position: absolute;

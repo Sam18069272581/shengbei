@@ -1,80 +1,84 @@
 <template>
   <view class="page">
-    <view class="hero">
-      <CloudLayer />
-      <view class="hero-title">
-        <text class="ht-char c1">圣</text><text class="ht-char c2">杯</text>
-      </view>
-      <view class="hero-line" />
-      <view class="hero-sub">掷筊问事 · 求灵签 · 看今日运势</view>
-      <view class="hero-gods">
-        <view v-for="(d, i) in deities" :key="d.id" class="hero-god" :class="'g' + i" @click="go(`/pages/qiuqian/qiuqian?deity=${d.id}`)">
-          <DeityAvatar :id="d.id" :size="150" :bubble="greetId === d.id ? greeting(d) : ''" />
-          <view class="hero-god-name">{{ d.name }}</view>
+    <TempleScene eave />
+    <view class="page-body">
+      <view class="hero">
+        <CloudLayer class="hero-clouds" />
+        <view class="hero-title">
+          <text class="ht-char c1">圣</text><text class="ht-char foil c2">杯</text>
+        </view>
+        <view class="hero-line" />
+        <view class="hero-sub">掷筊问事 · 求灵签 · 看今日运势</view>
+        <view class="hero-gods">
+          <view v-for="(d, i) in deities" :key="d.id" class="hero-god" :class="'g' + i" @click="go(`/pages/qiuqian/qiuqian?deity=${d.id}`)">
+            <DeityAvatar :id="d.id" :size="150" :bubble="greetId === d.id ? greeting(d) : ''" />
+            <view class="hero-god-name">{{ d.name }}</view>
+          </view>
         </view>
       </view>
-    </view>
 
-    <view class="card today pop-in" @click="go('/pages/daily/daily')">
-      <view class="today-head">
-        <text class="section-title">今日运势</text>
-        <text class="muted">农历{{ fortune.hl.lunar.text }}</text>
+      <view class="card today pop-in" @click="go('/pages/daily/daily')">
+        <view class="today-head">
+          <text class="section-title">今日运势</text>
+          <text class="muted">农历{{ fortune.hl.lunar.text }}</text>
+        </view>
+        <view class="today-saying">「{{ fortune.saying.text }}」</view>
+        <view class="stars">
+          <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= fortune.overall }" :style="{ animationDelay: i * 0.12 + 's' }">★</text>
+        </view>
+        <view class="aspects">
+          <view v-for="a in fortune.aspects" :key="a.key" class="aspect">
+            <text>{{ a.name }}</text>
+            <text class="aspect-stars">{{ '★'.repeat(a.stars) }}</text>
+          </view>
+        </view>
+        <view class="today-hl" @click.stop="go('/pages/huangli/huangli')">
+          <text class="hl-yi">宜</text><text>{{ fortune.hl.yi.slice(0, 4).join(' ') }}</text>
+        </view>
+        <view class="today-hl" @click.stop="go('/pages/huangli/huangli')">
+          <text class="hl-ji">忌</text><text>{{ fortune.hl.ji.slice(0, 4).join(' ') }}</text>
+        </view>
+        <view class="muted">点击查看黄历、详情与今日一签 ›</view>
       </view>
-      <view class="today-saying">「{{ fortune.saying.text }}」</view>
-      <view class="stars">
-        <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= fortune.overall }" :style="{ animationDelay: i * 0.12 + 's' }">★</text>
-      </view>
-      <view class="aspects">
-        <view v-for="a in fortune.aspects" :key="a.key" class="aspect">
-          <text>{{ a.name }}</text>
-          <text class="aspect-stars">{{ '★'.repeat(a.stars) }}</text>
+
+      <view class="entries">
+        <view class="entry" @click="go('/pages/jiao/jiao')">
+          <view class="entry-art jiao-art">
+            <image class="mini-jiao" :src="art('jiao-flat')" mode="widthFix" />
+            <image class="mini-jiao r" :src="art('jiao-round')" mode="widthFix" />
+          </view>
+          <view class="entry-name">掷筊问事</view>
+          <view class="entry-sub">是或否，问神明一句</view>
+        </view>
+        <view class="entry" @click="go('/pages/qiuqian/qiuqian')">
+          <view class="entry-art">
+            <image class="mini-tube" :src="art('tube')" mode="widthFix" />
+          </view>
+          <view class="entry-name">求灵签</view>
+          <view class="entry-sub">学业 · 工作 · 爱情</view>
         </view>
       </view>
-      <view class="today-hl" @click.stop="go('/pages/huangli/huangli')">
-        <text class="hl-yi">宜</text><text>{{ fortune.hl.yi.slice(0, 4).join(' ') }}</text>
-      </view>
-      <view class="today-hl" @click.stop="go('/pages/huangli/huangli')">
-        <text class="hl-ji">忌</text><text>{{ fortune.hl.ji.slice(0, 4).join(' ') }}</text>
-      </view>
-      <view class="muted">点击查看黄历、详情与今日一签 ›</view>
-    </view>
 
-    <view class="entries">
-      <view class="entry" @click="go('/pages/jiao/jiao')">
-        <view class="entry-art jiao-art">
-          <image class="mini-jiao" :src="art('jiao-flat')" mode="widthFix" />
-          <image class="mini-jiao r" :src="art('jiao-round')" mode="widthFix" />
+      <view class="history-link" @click="go('/pages/history/history')">
+        <text>我的签</text>
+        <text class="muted">{{ historyCount ? `已求 ${historyCount} 签` : '还没有求过签' }} ›</text>
+      </view>
+
+      <view class="section-title">按事项求签</view>
+      <view class="topics">
+        <view v-for="t in TOPICS" :key="t.key" class="topic" @click="go(`/pages/qiuqian/qiuqian?topic=${t.key}`)">
+          <view class="topic-icon">{{ t.icon }}</view>
+          <text>{{ t.name }}</text>
         </view>
-        <view class="entry-name">掷筊问事</view>
-        <view class="entry-sub">是或否，问神明一句</view>
       </view>
-      <view class="entry" @click="go('/pages/qiuqian/qiuqian')">
-        <view class="entry-art">
-          <image class="mini-tube" :src="art('tube')" mode="widthFix" />
-        </view>
-        <view class="entry-name">求灵签</view>
-        <view class="entry-sub">学业 · 工作 · 爱情</view>
-      </view>
-    </view>
 
-    <view class="history-link" @click="go('/pages/history/history')">
-      <text>我的签</text>
-      <text class="muted">{{ historyCount ? `已求 ${historyCount} 签` : '还没有求过签' }} ›</text>
+      <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
     </view>
-
-    <view class="section-title">按事项求签</view>
-    <view class="topics">
-      <view v-for="t in TOPICS" :key="t.key" class="topic" @click="go(`/pages/qiuqian/qiuqian?topic=${t.key}`)">
-        <view class="topic-icon">{{ t.icon }}</view>
-        <text>{{ t.name }}</text>
-      </view>
-    </view>
-
-    <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { art } from '../../utils/art'
 import { ref } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
@@ -111,6 +115,10 @@ const go = (url) => uni.navigateTo({ url })
 </script>
 
 <style lang="scss" scoped>
+/* 祥云放在殿檐下方 */
+.hero-clouds {
+  top: 120rpx !important;
+}
 .today-saying {
   margin: 8rpx 0 4rpx;
   text-align: center;
@@ -134,7 +142,7 @@ const go = (url) => uni.navigateTo({ url })
   position: relative;
   text-align: center;
   margin: -32rpx -32rpx 24rpx;
-  padding: 40rpx 32rpx 20rpx;
+  padding: 130rpx 32rpx 20rpx;
   background: transparent;
 }
 .hero-title {

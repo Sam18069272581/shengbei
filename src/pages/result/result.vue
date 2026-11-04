@@ -1,65 +1,72 @@
 <template>
   <view class="page" v-if="q">
-    <view class="cheer">
-      <DeityAvatar :id="q.deity.id" :size="180" :mood="cheerMood" :bubble="cheerText" />
-      <Sparkles v-if="LEVEL_SCORE[q.level] >= 4" />
-    </view>
-    <view class="scroll">
-      <view class="rod top" />
-      <view class="paper">
-        <view class="paper-head">
-          <text>{{ q.set.name }}</text>
-          <text>第{{ cnNumber(q.no) }}签<text v-if="q.label"> · {{ q.label }}</text></text>
-        </view>
-        <view class="level-row">
-          <view class="stamp-wrap">
-            <text class="level stamp" :class="`level-${q.level}`">{{ q.level }}签</text>
-            <view v-for="i in 7" :key="i" class="ink" :class="'k' + i" />
+    <TempleScene :blessed="LEVEL_SCORE[q.level] >= 4" />
+    <view class="page-body">
+      <view class="cheer">
+        <DeityAvatar :id="q.deity.id" :size="180" :mood="cheerMood" :bubble="cheerText" />
+        <Sparkles v-if="LEVEL_SCORE[q.level] >= 4" />
+      </view>
+      <view class="scroll">
+        <view class="rod top" />
+        <view class="paper">
+          <view class="paper-head">
+            <text>{{ q.set.name }}</text>
+            <text>第{{ cnNumber(q.no) }}签<text v-if="q.label"> · {{ q.label }}</text></text>
           </view>
+          <view class="level-row">
+            <view class="stamp-wrap">
+              <text class="level stamp" :class="`level-${q.level}`">{{ q.level }}签</text>
+              <view v-for="i in 7" :key="i" class="ink" :class="'k' + i" />
+            </view>
+          </view>
+          <view class="poem">
+            <view v-for="(line, i) in q.poem" :key="i" class="poem-line" :style="{ animationDelay: 1.0 + i * 0.45 + 's' }">{{ line }}</view>
+          </view>
+          <view v-if="q.title" class="story">典故：{{ q.title }}</view>
         </view>
-        <view class="poem">
-          <view v-for="(line, i) in q.poem" :key="i" class="poem-line" :style="{ animationDelay: 1.0 + i * 0.45 + 's' }">{{ line }}</view>
+        <view class="rod bottom" />
+      </view>
+
+      <view class="card rise">
+        <view class="section-title">签意</view>
+        <view class="text">{{ q.meaning }}</view>
+      </view>
+
+      <view class="card focus" v-if="topic && q.topics[topic]">
+        <view class="section-title">所问 · {{ topicName(topic) }}</view>
+        <view class="text">{{ q.topics[topic] }}</view>
+      </view>
+
+      <view class="card">
+        <view class="section-title">各事参考</view>
+        <view v-for="t in otherTopics" :key="t.key" class="topic-row">
+          <text class="topic-key">{{ t.name }}</text>
+          <text class="text">{{ q.topics[t.key] }}</text>
         </view>
-        <view v-if="q.title" class="story">典故：{{ q.title }}</view>
       </view>
-      <view class="rod bottom" />
-    </view>
 
-    <view class="card rise">
-      <view class="section-title">签意</view>
-      <view class="text">{{ q.meaning }}</view>
-    </view>
+      <view v-if="q.source_note" class="muted">注：{{ q.source_note }}</view>
+      <view class="muted">签诗版本：{{ q.set.source }}</view>
 
-    <view class="card focus" v-if="topic && q.topics[topic]">
-      <view class="section-title">所问 · {{ topicName(topic) }}</view>
-      <view class="text">{{ q.topics[topic] }}</view>
-    </view>
-
-    <view class="card">
-      <view class="section-title">各事参考</view>
-      <view v-for="t in otherTopics" :key="t.key" class="topic-row">
-        <text class="topic-key">{{ t.name }}</text>
-        <text class="text">{{ q.topics[t.key] }}</text>
+      <view class="btn share" @click="share">生成签卡 · 分享</view>
+      <view class="actions">
+        <view class="btn" @click="again">再求一签</view>
+        <view class="btn ghost" @click="home">回首页</view>
       </view>
+      <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
+      <ShareCard ref="card" :q="q" />
     </view>
-
-    <view v-if="q.source_note" class="muted">注：{{ q.source_note }}</view>
-    <view class="muted">签诗版本：{{ q.set.source }}</view>
-
-    <view class="btn share" @click="share">生成签卡 · 分享</view>
-    <view class="actions">
-      <view class="btn" @click="again">再求一签</view>
-      <view class="btn ghost" @click="home">回首页</view>
-    </view>
-    <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
-    <ShareCard ref="card" :q="q" />
   </view>
   <view class="page" v-else>
-    <view class="muted">找不到这支签。</view>
+    <TempleScene />
+    <view class="page-body">
+      <view class="muted">找不到这支签。</view>
+    </view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { ref, computed } from 'vue'
 import { onLoad, onShareAppMessage } from '@dcloudio/uni-app'
 import { TOPICS, topicName, getQian, cnNumber, LEVEL_SCORE } from '../../utils/qian'
@@ -194,7 +201,23 @@ onShareAppMessage(() => ({
   100% { transform: translate(var(--x), var(--y)) scale(1); opacity: 0.75; }
 }
 .stamp {
+  position: relative;
+  overflow: hidden;
   animation: stamp 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) 0.75s both;
+}
+.stamp::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -100%;
+  width: 60%;
+  background: linear-gradient(100deg, transparent, rgba(255, 250, 235, 0.6), transparent);
+  transform: skewX(-20deg);
+  animation: stamp-gleam 0.9s ease-in-out 1.4s both;
+}
+@keyframes stamp-gleam {
+  to { left: 160%; }
 }
 @keyframes stamp {
   from { transform: scale(3) rotate(-20deg); opacity: 0; }

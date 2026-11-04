@@ -1,83 +1,87 @@
 <template>
   <view class="page">
-    <view class="nav">
-      <view class="nav-btn" @click="shift(-1)">‹ 前一天</view>
-      <view class="nav-today" :class="{ off: isToday }" @click="backToday">回今天</view>
-      <view class="nav-btn" @click="shift(1)">后一天 ›</view>
-    </view>
-
-    <!-- 撕页日历：换日时旧页向上翻走、新页落下 -->
-    <view class="sheet" :key="key" :class="dir > 0 ? 'from-next' : dir < 0 ? 'from-prev' : 'first'">
-      <view class="sheet-top">
-        <text>{{ h.solar.y }} 年 {{ h.solar.m }} 月</text>
-        <text>星期{{ h.solar.week }}</text>
-      </view>
-      <view class="big-day">{{ h.solar.d }}</view>
-      <view class="lunar">农历{{ h.lunar.text }}</view>
-      <view class="gz">{{ h.ganzhi.year }}年【{{ h.shengxiao }}年】 {{ h.ganzhi.month }}月 {{ h.ganzhi.day }}日</view>
-
-      <view class="tags">
-        <text class="tag" :class="h.tianshen.type === '黄道' ? 'good' : 'bad'">{{ h.tianshen.type }} · {{ h.tianshen.name }}</text>
-        <text class="tag">{{ h.zhixing }}</text>
-        <text v-if="h.jieqi.today" class="tag good">今日{{ h.jieqi.name }}</text>
-        <text v-for="x in h.festivals" :key="x" class="tag good">{{ x }}</text>
-        <text v-if="h.shuowang" class="tag">{{ h.shuowang }}</text>
+    <TempleScene />
+    <view class="page-body">
+      <view class="nav">
+        <view class="nav-btn" @click="shift(-1)">‹ 前一天</view>
+        <view class="nav-today" :class="{ off: isToday }" @click="backToday">回今天</view>
+        <view class="nav-btn" @click="shift(1)">后一天 ›</view>
       </view>
 
-      <view class="yiji">
-        <view class="yj">
-          <view class="yj-mark yi">宜</view>
-          <view class="yj-list">
-            <text v-for="(x, i) in h.yi" :key="x" class="yj-item" :style="{ animationDelay: 0.35 + i * 0.04 + 's' }">{{ x }}</text>
+      <!-- 撕页日历：换日时旧页向上翻走、新页落下 -->
+      <view class="sheet" :key="key" :class="dir > 0 ? 'from-next' : dir < 0 ? 'from-prev' : 'first'">
+        <view class="sheet-top">
+          <text>{{ h.solar.y }} 年 {{ h.solar.m }} 月</text>
+          <text>星期{{ h.solar.week }}</text>
+        </view>
+        <view class="big-day">{{ h.solar.d }}</view>
+        <view class="lunar">农历{{ h.lunar.text }}</view>
+        <view class="gz">{{ h.ganzhi.year }}年【{{ h.shengxiao }}年】 {{ h.ganzhi.month }}月 {{ h.ganzhi.day }}日</view>
+
+        <view class="tags">
+          <text class="tag" :class="h.tianshen.type === '黄道' ? 'good' : 'bad'">{{ h.tianshen.type }} · {{ h.tianshen.name }}</text>
+          <text class="tag">{{ h.zhixing }}</text>
+          <text v-if="h.jieqi.today" class="tag good">今日{{ h.jieqi.name }}</text>
+          <text v-for="x in h.festivals" :key="x" class="tag good">{{ x }}</text>
+          <text v-if="h.shuowang" class="tag">{{ h.shuowang }}</text>
+        </view>
+
+        <view class="yiji">
+          <view class="yj">
+            <view class="yj-mark yi">宜</view>
+            <view class="yj-list">
+              <text v-for="(x, i) in h.yi" :key="x" class="yj-item" :style="{ animationDelay: 0.35 + i * 0.04 + 's' }">{{ x }}</text>
+            </view>
+          </view>
+          <view class="yj">
+            <view class="yj-mark ji">忌</view>
+            <view class="yj-list">
+              <text v-for="(x, i) in h.ji" :key="x" class="yj-item" :style="{ animationDelay: 0.45 + i * 0.04 + 's' }">{{ x }}</text>
+            </view>
           </view>
         </view>
-        <view class="yj">
-          <view class="yj-mark ji">忌</view>
-          <view class="yj-list">
-            <text v-for="(x, i) in h.ji" :key="x" class="yj-item" :style="{ animationDelay: 0.45 + i * 0.04 + 's' }">{{ x }}</text>
+
+        <view class="grid">
+          <view class="cell"><text class="k">冲煞</text><text>{{ h.chong }} {{ h.sha }}</text></view>
+          <view class="cell"><text class="k">纳音</text><text>{{ h.nayin }}</text></view>
+          <view class="cell"><text class="k">星宿</text><text>{{ h.xiu }} · {{ h.xiuLuck }}</text></view>
+          <view class="cell"><text class="k">节气</text><text>{{ h.jieqi.today ? '今日' + h.jieqi.name : h.jieqi.days + ' 天后' + h.jieqi.name }}</text></view>
+          <view class="cell"><text class="k">喜神</text><text>{{ h.position.xi }}</text></view>
+          <view class="cell"><text class="k">财神</text><text>{{ h.position.cai }}</text></view>
+          <view class="cell"><text class="k">福神</text><text>{{ h.position.fu }}</text></view>
+          <view class="cell"><text class="k">值神</text><text>{{ h.tianshen.name }}（{{ h.tianshen.luck }}）</text></view>
+        </view>
+
+        <view class="row">
+          <text class="k">吉神宜趋</text>
+          <text class="v">{{ h.jishen.join(' ') || '无' }}</text>
+        </view>
+        <view class="row">
+          <text class="k">凶煞宜忌</text>
+          <text class="v">{{ h.xiongsha.join(' ') || '无' }}</text>
+        </view>
+        <view class="row">
+          <text class="k">彭祖百忌</text>
+          <text class="v">{{ h.pengzu.join('　') }}</text>
+        </view>
+
+        <view class="hours-title">时辰吉凶</view>
+        <view class="hours">
+          <view v-for="t in h.hours" :key="t.zhi" class="hour" :class="t.luck === '吉' ? 'good' : 'bad'">
+            <text class="hz">{{ t.zhi }}</text>
+            <text class="hl">{{ t.luck }}</text>
           </view>
         </view>
       </view>
 
-      <view class="grid">
-        <view class="cell"><text class="k">冲煞</text><text>{{ h.chong }} {{ h.sha }}</text></view>
-        <view class="cell"><text class="k">纳音</text><text>{{ h.nayin }}</text></view>
-        <view class="cell"><text class="k">星宿</text><text>{{ h.xiu }} · {{ h.xiuLuck }}</text></view>
-        <view class="cell"><text class="k">节气</text><text>{{ h.jieqi.today ? '今日' + h.jieqi.name : h.jieqi.days + ' 天后' + h.jieqi.name }}</text></view>
-        <view class="cell"><text class="k">喜神</text><text>{{ h.position.xi }}</text></view>
-        <view class="cell"><text class="k">财神</text><text>{{ h.position.cai }}</text></view>
-        <view class="cell"><text class="k">福神</text><text>{{ h.position.fu }}</text></view>
-        <view class="cell"><text class="k">值神</text><text>{{ h.tianshen.name }}（{{ h.tianshen.luck }}）</text></view>
-      </view>
-
-      <view class="row">
-        <text class="k">吉神宜趋</text>
-        <text class="v">{{ h.jishen.join(' ') || '无' }}</text>
-      </view>
-      <view class="row">
-        <text class="k">凶煞宜忌</text>
-        <text class="v">{{ h.xiongsha.join(' ') || '无' }}</text>
-      </view>
-      <view class="row">
-        <text class="k">彭祖百忌</text>
-        <text class="v">{{ h.pengzu.join('　') }}</text>
-      </view>
-
-      <view class="hours-title">时辰吉凶</view>
-      <view class="hours">
-        <view v-for="t in h.hours" :key="t.zhi" class="hour" :class="t.luck === '吉' ? 'good' : 'bad'">
-          <text class="hz">{{ t.zhi }}</text>
-          <text class="hl">{{ t.luck }}</text>
-        </view>
-      </view>
+      <view class="btn" @click="goQian">择此日 · 去求一签</view>
+      <view class="disclaimer">黄历内容依传统历法推算，仅供民俗文化参考</view>
     </view>
-
-    <view class="btn" @click="goQian">择此日 · 去求一签</view>
-    <view class="disclaimer">黄历内容依传统历法推算，仅供民俗文化参考</view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { huangli } from '../../utils/huangli'
