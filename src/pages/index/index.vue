@@ -18,7 +18,7 @@
     <view class="card today pop-in" @click="go('/pages/daily/daily')">
       <view class="today-head">
         <text class="section-title">今日运势</text>
-        <text class="muted">{{ fortune.date }}</text>
+        <text class="muted">农历{{ fortune.hl.lunar.text }}</text>
       </view>
       <view class="stars">
         <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= fortune.overall }" :style="{ animationDelay: i * 0.12 + 's' }">★</text>
@@ -29,7 +29,13 @@
           <text class="aspect-stars">{{ '★'.repeat(a.stars) }}</text>
         </view>
       </view>
-      <view class="muted">点击查看详情与今日一签 ›</view>
+      <view class="today-hl" @click.stop="go('/pages/huangli/huangli')">
+        <text class="hl-yi">宜</text><text>{{ fortune.hl.yi.slice(0, 4).join(' ') }}</text>
+      </view>
+      <view class="today-hl" @click.stop="go('/pages/huangli/huangli')">
+        <text class="hl-ji">忌</text><text>{{ fortune.hl.ji.slice(0, 4).join(' ') }}</text>
+      </view>
+      <view class="muted">点击查看黄历、详情与今日一签 ›</view>
     </view>
 
     <view class="entries">
@@ -198,6 +204,26 @@ const go = (url) => uni.navigateTo({ url })
 .aspect-stars {
   color: $sb-gold;
   margin-left: 12rpx;
+}
+.today-hl {
+  font-size: 24rpx;
+  color: $sb-text;
+  margin-bottom: 10rpx;
+}
+.hl-yi, .hl-ji {
+  display: inline-block;
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 22rpx;
+  color: #f6e9d0;
+  margin-right: 12rpx;
+  background: $sb-vermilion;
+}
+.hl-ji {
+  background: #4a4440;
 }
 .entries {
   display: flex;
