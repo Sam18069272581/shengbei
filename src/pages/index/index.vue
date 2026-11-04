@@ -20,6 +20,7 @@
         <text class="section-title">今日运势</text>
         <text class="muted">农历{{ fortune.hl.lunar.text }}</text>
       </view>
+      <view class="today-saying">「{{ fortune.saying.text }}」</view>
       <view class="stars">
         <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= fortune.overall }" :style="{ animationDelay: i * 0.12 + 's' }">★</text>
       </view>
@@ -56,6 +57,11 @@
       </view>
     </view>
 
+    <view class="history-link" @click="go('/pages/history/history')">
+      <text>我的签</text>
+      <text class="muted">{{ historyCount ? `已求 ${historyCount} 签` : '还没有求过签' }} ›</text>
+    </view>
+
     <view class="section-title">按事项求签</view>
     <view class="topics">
       <view v-for="t in TOPICS" :key="t.key" class="topic" @click="go(`/pages/qiuqian/qiuqian?topic=${t.key}`)">
@@ -74,11 +80,13 @@ import { ref } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
 import { TOPICS, listDeities } from '../../utils/qian'
 import { dailyFortune } from '../../utils/daily'
+import { getHistory } from '../../utils/storage'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import CloudLayer from '../../components/CloudLayer.vue'
 
 const deities = listDeities()
 const fortune = ref(dailyFortune())
+const historyCount = ref(getHistory().length)
 
 // 神明轮流打招呼
 const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～' }
@@ -88,6 +96,7 @@ let timer = null
 let idx = 0
 onShow(() => {
   fortune.value = dailyFortune()
+  historyCount.value = getHistory().length
   clearInterval(timer)
   const tick = () => {
     greetId.value = deities[idx % deities.length]?.id || ''
@@ -102,6 +111,25 @@ const go = (url) => uni.navigateTo({ url })
 </script>
 
 <style lang="scss" scoped>
+.today-saying {
+  margin: 8rpx 0 4rpx;
+  text-align: center;
+  font-size: 30rpx;
+  letter-spacing: 2rpx;
+  color: $sb-gold-light;
+}
+.history-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  margin-bottom: 28rpx;
+  border: 1rpx solid $sb-line;
+  border-radius: 12rpx;
+  background: $sb-surface;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+}
 .hero {
   position: relative;
   text-align: center;

@@ -46,11 +46,13 @@
     <view v-if="q.source_note" class="muted">注：{{ q.source_note }}</view>
     <view class="muted">签诗版本：{{ q.set.source }}</view>
 
+    <view class="btn share" @click="share">生成签卡 · 分享</view>
     <view class="actions">
       <view class="btn" @click="again">再求一签</view>
       <view class="btn ghost" @click="home">回首页</view>
     </view>
     <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
+    <ShareCard ref="card" :q="q" />
   </view>
   <view class="page" v-else>
     <view class="muted">找不到这支签。</view>
@@ -59,10 +61,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShareAppMessage } from '@dcloudio/uni-app'
 import { TOPICS, topicName, getQian, cnNumber, LEVEL_SCORE } from '../../utils/qian'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import Sparkles from '../../components/Sparkles.vue'
+import ShareCard from '../../components/ShareCard.vue'
 
 const q = ref(null)
 const topic = ref('')
@@ -81,6 +84,14 @@ const otherTopics = computed(() => TOPICS.filter((t) => t.key !== topic.value &&
 
 const again = () => uni.redirectTo({ url: `/pages/qiuqian/qiuqian?deity=${q.value.deity.id}&topic=${topic.value}` })
 const home = () => uni.reLaunch({ url: '/pages/index/index' })
+
+const card = ref(null)
+const share = () => card.value?.open()
+// 小程序右上角「转发」：带上这支签，朋友点开直接看解签
+onShareAppMessage(() => ({
+  title: `我求得${q.value.deity.name}第${cnNumber(q.value.no)}签 · ${q.value.level}签`,
+  path: `/pages/result/result?deity=${q.value.deity.id}&no=${q.value.no}`,
+}))
 </script>
 
 <style lang="scss" scoped>
@@ -232,10 +243,15 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
   color: $sb-red;
   font-size: 28rpx;
 }
+.share {
+  margin-top: 36rpx;
+  background: linear-gradient(180deg, #e9cf95, #b98f4e);
+  color: #2a1f16;
+}
 .actions {
   display: flex;
   gap: 24rpx;
-  margin-top: 36rpx;
+  margin-top: 24rpx;
 }
 .actions .btn {
   flex: 1;
