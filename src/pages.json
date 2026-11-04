@@ -5,7 +5,8 @@
     { "path": "pages/qiuqian/qiuqian", "style": { "navigationBarTitleText": "求灵签" } },
     { "path": "pages/result/result", "style": { "navigationBarTitleText": "解签" } },
     { "path": "pages/daily/daily", "style": { "navigationBarTitleText": "今日运势" } },
-    { "path": "pages/huangli/huangli", "style": { "navigationBarTitleText": "黄历" } }
+    { "path": "pages/huangli/huangli", "style": { "navigationBarTitleText": "黄历" } },
+    { "path": "pages/history/history", "style": { "navigationBarTitleText": "我的签" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",

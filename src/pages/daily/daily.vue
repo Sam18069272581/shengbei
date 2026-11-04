@@ -2,6 +2,11 @@
   <view class="page">
     <view class="card head">
       <view class="muted">{{ f.date }} · 农历{{ f.hl.lunar.text }} · {{ f.hl.ganzhi.day }}日</view>
+      <view class="saying">
+        <view v-if="f.saying.occasion" class="saying-tag">{{ f.saying.occasion }}</view>
+        <view v-for="(l, i) in sayingLines" :key="i" class="saying-text">{{ l }}</view>
+        <view class="saying-from">—— {{ f.saying.from }}</view>
+      </view>
       <view class="overall">
         今日综合
         <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= f.overall }" :style="{ animationDelay: 0.2 + i * 0.15 + 's' }">★</text>
@@ -68,6 +73,8 @@ const f = dailyFortune()
 const poemText = f.qian
   ? f.qian.poem.map((l, i) => (/[，。！？；、]$/.test(l) ? l : l + (i < f.qian.poem.length - 1 ? '，' : '。'))).join('')
   : ''
+// 签语按逗号分行，避免长句折行时只剩一个字
+const sayingLines = f.saying.text.replace(/？/g, '？，').split('，').filter(Boolean)
 const openHuangli = () => uni.navigateTo({ url: '/pages/huangli/huangli' })
 const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qian.deityId}&no=${f.qian.no}` })
 </script>
@@ -75,6 +82,38 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 <style lang="scss" scoped>
 .head {
   text-align: center;
+}
+/* 每日签语：竖排感的大字 + 出处 */
+.saying {
+  margin: 28rpx 0 20rpx;
+  padding: 28rpx 12rpx 24rpx;
+  border-top: 1rpx solid $sb-line;
+  border-bottom: 1rpx solid $sb-line;
+  animation: saying-in 1.2s ease-out both;
+}
+.saying-tag {
+  display: inline-block;
+  padding: 2rpx 18rpx;
+  margin-bottom: 14rpx;
+  border: 1rpx solid $sb-vermilion;
+  color: $sb-vermilion;
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+}
+.saying-text {
+  font-size: 36rpx;
+  line-height: 1.7;
+  letter-spacing: 4rpx;
+  color: $sb-gold-light;
+}
+.saying-from {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: $sb-muted;
+}
+@keyframes saying-in {
+  from { opacity: 0; filter: blur(6rpx); letter-spacing: 14rpx; }
+  to { opacity: 1; filter: blur(0); }
 }
 .overall {
   font-size: 36rpx;

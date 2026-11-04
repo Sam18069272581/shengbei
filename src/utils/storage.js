@@ -33,3 +33,4 @@ export function addHistory(item) {
   set('sb_history', list.slice(0, 100))
 }
 export const getHistory = () => get('sb_history', [])
+export const clearHistory = () => set('sb_history', [])
