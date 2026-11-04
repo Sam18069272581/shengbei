@@ -4,7 +4,8 @@
     { "path": "pages/jiao/jiao", "style": { "navigationBarTitleText": "掷筊问事" } },
     { "path": "pages/qiuqian/qiuqian", "style": { "navigationBarTitleText": "求灵签" } },
     { "path": "pages/result/result", "style": { "navigationBarTitleText": "解签" } },
-    { "path": "pages/daily/daily", "style": { "navigationBarTitleText": "今日运势" } }
+    { "path": "pages/daily/daily", "style": { "navigationBarTitleText": "今日运势" } },
+    { "path": "pages/huangli/huangli", "style": { "navigationBarTitleText": "黄历" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",

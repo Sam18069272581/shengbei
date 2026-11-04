@@ -1,6 +1,7 @@
 import { hashString, mulberry32, randInt, pickN } from './random'
 import { listDeities, getSet, LEVEL_SCORE } from './qian'
 import { deviceId, today } from './storage'
+import { huangli } from './huangli'
 
 const YI = ['读书温习', '整理计划', '拜访长辈', '投递简历', '约见朋友', '早睡早起', '运动出汗', '整理房间', '记账理财', '学习新技能', '表达心意', '静心独处', '出门散步', '向人请教']
 const JI = ['冲动消费', '熬夜', '与人争执', '轻信传言', '拖延', '暴饮暴食', '仓促决定', '背后议论', '借贷担保', '过度劳累']
@@ -36,6 +37,7 @@ export function dailyFortune(date = today()) {
 
   return {
     date,
+    hl: huangli(date),
     overall,
     aspects,
     qian,

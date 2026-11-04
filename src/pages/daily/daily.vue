@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <view class="card head">
-      <view class="muted">{{ f.date }}</view>
+      <view class="muted">{{ f.date }} · 农历{{ f.hl.lunar.text }} · {{ f.hl.ganzhi.day }}日</view>
       <view class="overall">
         今日综合
         <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= f.overall }" :style="{ animationDelay: 0.2 + i * 0.15 + 's' }">★</text>
@@ -18,6 +18,21 @@
       </view>
     </view>
 
+    <view class="card hl" @click="openHuangli">
+      <view class="hl-head">
+        <text class="section-title">今日黄历</text>
+        <text class="hl-type" :class="f.hl.tianshen.type === '黄道' ? 'good' : ''">{{ f.hl.tianshen.type }}日 · {{ f.hl.zhixing }}</text>
+      </view>
+      <view v-if="f.hl.festivals.length || f.hl.jieqi.today" class="hl-fest">
+        {{ [f.hl.jieqi.today ? '今日' + f.hl.jieqi.name : '', ...f.hl.festivals].filter(Boolean).join(' · ') }}
+      </view>
+      <view class="hl-line"><text class="hl-mark yi">宜</text><text class="hl-items">{{ f.hl.yi.slice(0, 8).join(' ') }}</text></view>
+      <view class="hl-line"><text class="hl-mark ji">忌</text><text class="hl-items">{{ f.hl.ji.slice(0, 8).join(' ') }}</text></view>
+      <view class="muted hl-foot">{{ f.hl.chong }} {{ f.hl.sha }} · 财神{{ f.hl.position.cai }}</view>
+      <view class="muted">查看完整黄历 ›</view>
+    </view>
+
+    <view class="section-title">我的今日小贴士</view>
     <view class="card yiji">
       <view class="col">
         <view class="yi-title">宜</view>
@@ -53,6 +68,7 @@ const f = dailyFortune()
 const poemText = f.qian
   ? f.qian.poem.map((l, i) => (/[，。！？；、]$/.test(l) ? l : l + (i < f.qian.poem.length - 1 ? '，' : '。'))).join('')
   : ''
+const openHuangli = () => uni.navigateTo({ url: '/pages/huangli/huangli' })
 const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qian.deityId}&no=${f.qian.no}` })
 </script>
 
@@ -122,6 +138,50 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 }
 .yiji {
   display: flex;
+}
+.hl-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.hl-type {
+  font-size: 24rpx;
+  color: $sb-muted;
+}
+.hl-type.good {
+  color: $sb-vermilion;
+}
+.hl-fest {
+  color: $sb-gold-light;
+  font-size: 26rpx;
+  margin: -8rpx 0 14rpx;
+}
+.hl-line {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+}
+.hl-mark {
+  flex: none;
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 26rpx;
+  margin-right: 16rpx;
+  color: #f6e9d0;
+}
+.hl-mark.yi { background: $sb-vermilion; }
+.hl-mark.ji { background: #4a4440; }
+.hl-items {
+  flex: 1;
+  letter-spacing: 2rpx;
+}
+.hl-foot {
+  margin: 4rpx 0 6rpx;
 }
 .col {
   flex: 1;
