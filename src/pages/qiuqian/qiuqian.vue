@@ -27,7 +27,7 @@
             <view class="muted">{{ d.total }} 签 · {{ d.domains.slice(0, 2).join('、') }}</view>
           </view>
         </view>
-        <view v-if="!deities.length" class="muted">签文数据尚未生成，请先运行 npm run build:data</view>
+        <NoDeityData v-if="!deities.length" />
 
         <view class="tips muted">求签前心中默念姓名、生辰、住址，以及想问的事，越具体越好。</view>
         <view class="btn" :class="{ disabled: !deityId }" @click="startShake">开始求签</view>
@@ -97,6 +97,7 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import JiaoBlocks from '../../components/JiaoBlocks.vue'
 import DeityAvatar from '../../components/DeityAvatar.vue'
+import NoDeityData from '../../components/NoDeityData.vue'
 import { TOPICS, topicName, listDeities, recommendDeity, getSet, cnNumber } from '../../utils/qian'
 import { throwJiao } from '../../utils/jiao'
 import { play, stop } from '../../utils/sound'

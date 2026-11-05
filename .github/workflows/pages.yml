@@ -25,6 +25,8 @@ jobs:
           node-version: 22 # build-data 用到 node:sqlite
           cache: npm
       - run: npm ci
+      - run: npm run lint
+      - run: npm test
       - run: npm run build:h5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -2,6 +2,7 @@
 // 全部本地推算（lunar-javascript），生日只存在本机。
 import { Solar } from 'lunar-javascript'
 import { getProfile } from './storage'
+import { ymdParts } from './date'
 
 const ZHI = '子丑寅卯辰巳午未申酉戌亥'
 const ANIMAL = '鼠牛虎兔龙蛇马羊猴鸡狗猪'
@@ -12,11 +13,9 @@ const SANHE = ['申子辰', '亥卯未', '寅午戌', '巳酉丑']
 const HAI = ['子未', '丑午', '寅巳', '卯辰', '申亥', '酉戌']
 const pair = (list, a, b) => list.some((p) => p.includes(a) && p.includes(b))
 
-const parse = (s) => s.split('-').map(Number)
-
 // 按农历年定生肖（以春节为界，民间最常用的算法）
 export function zodiacOf(birthday) {
-  const l = Solar.fromYmd(...parse(birthday)).getLunar()
+  const l = Solar.fromYmd(...ymdParts(birthday)).getLunar()
   const zhi = l.getYearZhi()
   return { zhi, animal: ANIMAL[ZHI.indexOf(zhi)] }
 }
@@ -43,7 +42,7 @@ function taisui(yearZhi, myZhi) {
 export function zodiacDay(date, profile = getProfile()) {
   if (!profile?.birthday) return null
   const me = zodiacOf(profile.birthday)
-  const l = Solar.fromYmd(...parse(date)).getLunar()
+  const l = Solar.fromYmd(...ymdParts(date)).getLunar()
   const dayZhi = l.getDayZhi()
   return {
     ...me,

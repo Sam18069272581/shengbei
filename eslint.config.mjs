@@ -19,4 +19,12 @@ export default [
       'vue/multi-word-component-names': 'off',
     },
   },
+  {
+    files: ['**/*.vue'],
+    rules: {
+      // 模板文字里的全角空格是有意的排版，只检查脚本部分
+      'no-irregular-whitespace': 'off',
+      'vue/no-irregular-whitespace': ['error', { skipHTMLTextContents: true }],
+    },
+  },
 ]

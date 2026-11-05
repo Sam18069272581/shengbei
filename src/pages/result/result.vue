@@ -87,6 +87,7 @@ import DeityAvatar from '../../components/DeityAvatar.vue'
 import Sparkles from '../../components/Sparkles.vue'
 import ShareCard from '../../components/ShareCard.vue'
 import { play } from '../../utils/sound'
+import { shareMessage } from '../../utils/share'
 
 const q = ref(null)
 const topic = ref('')
@@ -112,10 +113,7 @@ const home = () => uni.reLaunch({ url: '/pages/index/index' })
 const card = ref(null)
 const share = () => card.value?.open()
 // 小程序右上角「转发」：带上这支签，朋友点开直接看解签
-onShareAppMessage(() => ({
-  title: `我求得${q.value.deity.name}第${cnNumber(q.value.no)}签 · ${q.value.level}签`,
-  path: `/pages/result/result?deity=${q.value.deity.id}&no=${q.value.no}`,
-}))
+onShareAppMessage(() => shareMessage(q.value))
 </script>
 
 <style lang="scss" scoped>
