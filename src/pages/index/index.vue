@@ -23,6 +23,10 @@
           <text class="muted">农历{{ fortune.hl.lunar.text }}</text>
         </view>
         <view class="today-saying">「{{ fortune.saying.text }}」</view>
+        <view v-if="fortune.zodiac" class="today-zodiac">
+          <text class="tz-tag" :class="{ bad: !fortune.zodiac.good }">{{ fortune.zodiac.tag }}</text>
+          <text>属{{ fortune.zodiac.animal }} · {{ fortune.zodiac.text.split('，')[0] }}</text>
+        </view>
         <view class="stars">
           <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= fortune.overall }" :style="{ animationDelay: i * 0.12 + 's' }">★</text>
         </view>
@@ -118,6 +122,25 @@ const go = (url) => uni.navigateTo({ url })
 /* 祥云放在殿檐下方 */
 .hero-clouds {
   top: 120rpx !important;
+}
+.today-zodiac {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx;
+  margin: 6rpx 0;
+  font-size: 24rpx;
+  color: $sb-muted;
+}
+.tz-tag {
+  padding: 0 10rpx;
+  border-radius: 4rpx;
+  background: $sb-vermilion;
+  color: #f6e9d0;
+  font-size: 22rpx;
+}
+.tz-tag.bad {
+  background: #4a4440;
 }
 .today-saying {
   margin: 8rpx 0 4rpx;

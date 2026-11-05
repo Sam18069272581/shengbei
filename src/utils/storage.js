@@ -34,3 +34,7 @@ export function addHistory(item) {
 }
 export const getHistory = () => get('sb_history', [])
 export const clearHistory = () => set('sb_history', [])
+
+// 个人资料（目前只有生日），只存本机
+export const getProfile = () => get('sb_profile', null)
+export const setProfile = (p) => set('sb_profile', p)

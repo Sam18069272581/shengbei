@@ -16,6 +16,27 @@
         <view class="lucky muted">幸运色 {{ f.color }} · 幸运数字 {{ f.number }}</view>
       </view>
 
+      <!-- 生肖提醒：没填生日时引导填写 -->
+      <view class="card zodiac" v-if="f.zodiac">
+        <view class="zd-head">
+          <text class="section-title">生肖提醒</text>
+          <picker mode="date" :value="birthday" start="1920-01-01" :end="f.date" @change="onBirthday">
+            <text class="muted">属{{ f.zodiac.animal }} · 修改生日 ›</text>
+          </picker>
+        </view>
+        <view class="zd-line">
+          <text class="zd-tag" :class="{ bad: !f.zodiac.good }">{{ f.zodiac.tag }}</text>
+          <text class="zd-text">{{ f.zodiac.dayAnimal }}日：{{ f.zodiac.text }}</text>
+        </view>
+        <view v-if="f.zodiac.taisui" class="muted zd-taisui">{{ f.zodiac.taisui }}</view>
+      </view>
+      <picker v-else mode="date" value="1995-01-01" start="1920-01-01" :end="f.date" @change="onBirthday">
+        <view class="card zodiac-empty">
+          <view class="section-title">生肖提醒</view>
+          <view class="muted">填一次生日，每天告诉你今日是冲是合 ›</view>
+        </view>
+      </picker>
+
       <view class="card">
         <view class="section-title">分项运势</view>
         <view v-for="(a, idx) in f.aspects" :key="a.key" class="aspect">
@@ -68,11 +89,20 @@
 
 <script setup>
 import TempleScene from '../../components/TempleScene.vue'
+import { reactive, ref } from 'vue'
 import { dailyFortune } from '../../utils/daily'
+import { getProfile, setProfile } from '../../utils/storage'
 import { cnNumber } from '../../utils/qian'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 
-const f = dailyFortune()
+const f = reactive(dailyFortune())
+const birthday = ref(getProfile()?.birthday || '1995-01-01')
+// 改了生日：保存后重算当日运势（综合分会随冲合变化）
+function onBirthday(e) {
+  birthday.value = e.detail.value
+  setProfile({ ...(getProfile() || {}), birthday: e.detail.value })
+  Object.assign(f, dailyFortune())
+}
 // 有的签诗自带标点，有的没有：没有标点的句子补上逗号/句号
 const poemText = f.qian
   ? f.qian.poem.map((l, i) => (/[，。！？；、]$/.test(l) ? l : l + (i < f.qian.poem.length - 1 ? '，' : '。'))).join('')
@@ -84,6 +114,38 @@ const openQian = () => uni.navigateTo({ url: `/pages/result/result?deity=${f.qia
 </script>
 
 <style lang="scss" scoped>
+.zd-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.zd-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+}
+.zd-tag {
+  flex: none;
+  padding: 4rpx 16rpx;
+  border-radius: 6rpx;
+  background: $sb-vermilion;
+  color: #f6e9d0;
+  font-size: 26rpx;
+  letter-spacing: 2rpx;
+}
+.zd-tag.bad {
+  background: #4a4440;
+}
+.zd-text {
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+.zd-taisui {
+  margin-top: 14rpx;
+}
+.zodiac-empty {
+  border-style: dashed;
+}
 .head {
   text-align: center;
 }
