@@ -67,6 +67,7 @@ import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import JiaoBlocks from '../../components/JiaoBlocks.vue'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import { throwJiao } from '../../utils/jiao'
+import { play } from '../../utils/sound'
 import { listDeities } from '../../utils/qian'
 import { useShake } from '../../utils/shake'
 
@@ -124,6 +125,8 @@ function toss() {
     records.value.unshift(current.value)
     landKey.value++
     state.value = 'landed'
+    setTimeout(() => play('clack'), 340)
+    if (current.value.kind === 'sheng') setTimeout(() => play('chime', { volume: 0.6 }), 700)
     uni.vibrateShort?.({ fail: () => {} })
   }, 1300)
 }

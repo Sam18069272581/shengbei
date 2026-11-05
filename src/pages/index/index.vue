@@ -2,6 +2,7 @@
   <view class="page">
     <TempleScene eave />
     <view class="page-body">
+      <view class="sound-btn" :class="{ off: !sound }" @click="toggleSound">{{ sound ? '♪ 音效开' : '♪ 音效关' }}</view>
       <view class="hero">
         <CloudLayer class="hero-clouds" />
         <view class="hero-title">
@@ -93,6 +94,7 @@ import { onShow, onHide } from '@dcloudio/uni-app'
 import { TOPICS, listDeities } from '../../utils/qian'
 import { dailyFortune } from '../../utils/daily'
 import { getHistory, incenseStreak } from '../../utils/storage'
+import { soundOn, setSound, play } from '../../utils/sound'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import CloudLayer from '../../components/CloudLayer.vue'
 
@@ -100,6 +102,12 @@ const deities = listDeities()
 const fortune = ref(dailyFortune())
 const historyCount = ref(getHistory().length)
 const incenseStreakDays = ref(incenseStreak())
+const sound = ref(soundOn())
+function toggleSound() {
+  sound.value = !sound.value
+  setSound(sound.value)
+  if (sound.value) play('chime', { volume: 0.5 })
+}
 
 // 神明轮流打招呼
 const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～' }
@@ -125,6 +133,21 @@ const go = (url) => uni.navigateTo({ url })
 </script>
 
 <style lang="scss" scoped>
+.sound-btn {
+  position: absolute;
+  z-index: 3;
+  top: 14rpx;
+  right: 120rpx;
+  padding: 4rpx 18rpx;
+  border: 1rpx solid $sb-line;
+  border-radius: 30rpx;
+  background: rgba(20, 16, 12, 0.6);
+  color: $sb-gold;
+  font-size: 22rpx;
+}
+.sound-btn.off {
+  color: $sb-muted;
+}
 /* 祥云放在殿檐下方 */
 .hero-clouds {
   top: 120rpx !important;

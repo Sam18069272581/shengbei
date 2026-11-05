@@ -98,6 +98,7 @@ import JiaoBlocks from '../../components/JiaoBlocks.vue'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import { TOPICS, topicName, listDeities, recommendDeity, getSet, cnNumber } from '../../utils/qian'
 import { throwJiao } from '../../utils/jiao'
+import { play, stop } from '../../utils/sound'
 import { addHistory } from '../../utils/storage'
 import { useShake } from '../../utils/shake'
 
@@ -152,7 +153,13 @@ function startShake() {
 function shakeTube() {
   if (step.value !== 'shake' || shaking.value || drawn.value) return
   shaking.value = true
+  play('rattle')
+  const again = setTimeout(() => play('rattle'), 900)
   setTimeout(() => {
+    clearTimeout(again)
+    stop('rattle')
+    play('stick')
+    setTimeout(() => play('chime', { volume: 0.6 }), 650)
     const total = getSet(deityId.value).qian.length
     drawn.value = 1 + Math.floor(Math.random() * total)
     shaking.value = false
@@ -173,6 +180,8 @@ function tossConfirm() {
     jiao.value = throwJiao()
     landKey.value++
     jiaoState.value = 'landed'
+    setTimeout(() => play('clack'), 340)
+    if (jiao.value.kind === 'sheng') setTimeout(() => play('chime', { volume: 0.6 }), 700)
   }, 1300)
 }
 

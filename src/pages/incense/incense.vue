@@ -89,6 +89,7 @@ import DeityAvatar from '../../components/DeityAvatar.vue'
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { art } from '../../utils/art'
+import { play } from '../../utils/sound'
 import { listDeities } from '../../utils/qian'
 import { getIncense, lightIncense, incenseStreak, BURN_MS, today } from '../../utils/storage'
 
@@ -156,6 +157,8 @@ function light() {
   litKey.value++
   justLit.value = true
   uni.vibrateShort?.({ fail: () => {} })
+  play('chime', { volume: 0.6 })
+  setTimeout(() => play('bell', { volume: 0.7 }), 900)
   setTimeout(() => (justLit.value = false), 2600)
 }
 </script>

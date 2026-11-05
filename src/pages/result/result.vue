@@ -73,6 +73,7 @@ import { TOPICS, topicName, getQian, cnNumber, LEVEL_SCORE } from '../../utils/q
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import Sparkles from '../../components/Sparkles.vue'
 import ShareCard from '../../components/ShareCard.vue'
+import { play } from '../../utils/sound'
 
 const q = ref(null)
 const topic = ref('')
@@ -80,6 +81,8 @@ const topic = ref('')
 onLoad((opts) => {
   q.value = getQian(opts.deity, Number(opts.no))
   topic.value = opts.topic || ''
+  // 签纸展开时敲一声磬
+  if (q.value) setTimeout(() => play('bell', { volume: 0.7 }), 300)
   if (q.value) uni.setNavigationBarTitle({ title: `${q.value.deity.name} · 第${cnNumber(q.value.no)}签` })
 })
 
