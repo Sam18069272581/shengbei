@@ -18,13 +18,41 @@ page {
   -webkit-font-smoothing: antialiased;
 }
 .page {
+  position: relative;
   min-height: 100vh;
   padding: 32rpx 36rpx 80rpx;
   box-sizing: border-box;
 }
+/* 页面内容浮在 TempleScene 场景之上，进场时由虚到实 */
+.page-body {
+  position: relative;
+  z-index: 1;
+  animation: page-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(24rpx); filter: blur(6rpx); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+/* 金箔字：一道高光缓缓扫过 */
+.foil {
+  background: linear-gradient(100deg, #b98f4e 0%, #f6e3b4 30%, #fffaf0 40%, #f6e3b4 50%, #b98f4e 80%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: foil 4.5s ease-in-out infinite;
+}
+@keyframes foil {
+  0% { background-position: 100% 0; }
+  60%, 100% { background-position: 0 0; }
+}
 .card {
   position: relative;
-  background: $sb-surface;
+  background: linear-gradient(160deg, rgba(255, 236, 200, 0.07), rgba(255, 236, 200, 0.025) 60%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20rpx 50rpx rgba(0, 0, 0, 0.35), 0 1rpx 0 rgba(255, 240, 210, 0.08) inset;
   border: 1rpx solid $sb-line;
   border-radius: 8rpx;
   padding: 36rpx 34rpx;
@@ -61,8 +89,34 @@ page {
   letter-spacing: 12rpx;
   box-shadow: 0 0 0 1rpx rgba(240, 217, 166, 0.6) inset, 0 12rpx 30rpx rgba(0, 0, 0, 0.4);
 }
+.btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+/* 按钮表面一道流光 */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 250, 235, 0.45), transparent);
+  transform: skewX(-20deg);
+  animation: btn-sheen 5s ease-in-out 1.2s infinite;
+}
+.btn.ghost::after,
+.btn.disabled::after {
+  display: none;
+}
+@keyframes btn-sheen {
+  0% { left: -60%; }
+  25%, 100% { left: 130%; }
+}
 .btn:active {
   opacity: 0.85;
+  transform: scale(0.97);
 }
 .btn.ghost {
   background: transparent;

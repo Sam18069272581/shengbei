@@ -1,51 +1,55 @@
 <template>
   <view class="page">
-    <view v-if="list.length" class="summary card">
-      <view class="sum-item">
-        <view class="sum-num">{{ list.length }}</view>
-        <view class="muted">共求签</view>
+    <TempleScene />
+    <view class="page-body">
+      <view v-if="list.length" class="summary card">
+        <view class="sum-item">
+          <view class="sum-num">{{ list.length }}</view>
+          <view class="muted">共求签</view>
+        </view>
+        <view class="sum-item">
+          <view class="sum-num">{{ goodCount }}</view>
+          <view class="muted">上签以上</view>
+        </view>
+        <view class="sum-item">
+          <view class="sum-num name">{{ favDeity || '—' }}</view>
+          <view class="muted">最常拜</view>
+        </view>
       </view>
-      <view class="sum-item">
-        <view class="sum-num">{{ goodCount }}</view>
-        <view class="muted">上签以上</view>
-      </view>
-      <view class="sum-item">
-        <view class="sum-num name">{{ favDeity || '—' }}</view>
-        <view class="muted">最常拜</view>
-      </view>
-    </view>
 
-    <view v-for="g in groups" :key="g.day" class="group">
-      <view class="day muted">{{ g.day }}</view>
-      <view v-for="(r, i) in g.items" :key="r.at" class="row card" :style="{ animationDelay: Math.min(i, 8) * 0.06 + 's' }" @click="open(r)">
-        <view class="row-god"><DeityAvatar :id="r.deityId" :size="96" /></view>
-        <view class="row-main">
-          <view class="row-head">
-            <text>{{ r.q.deity.name }} · 第{{ cnNumber(r.no) }}签</text>
-            <text class="lv" :class="'lv-' + r.q.level">{{ r.q.level }}</text>
-          </view>
-          <view class="row-poem">{{ firstCouplet(r.q.poem) }}</view>
-          <view class="row-meta muted">
-            <text>{{ time(r.at) }}</text>
-            <text v-if="r.topic"> · 问{{ topicName(r.topic) }}</text>
-            <text v-if="r.confirmed"> · 圣杯允签</text>
+      <view v-for="g in groups" :key="g.day" class="group">
+        <view class="day muted">{{ g.day }}</view>
+        <view v-for="(r, i) in g.items" :key="r.at" class="row card" :style="{ animationDelay: Math.min(i, 8) * 0.06 + 's' }" @click="open(r)">
+          <view class="row-god"><DeityAvatar :id="r.deityId" :size="96" /></view>
+          <view class="row-main">
+            <view class="row-head">
+              <text>{{ r.q.deity.name }} · 第{{ cnNumber(r.no) }}签</text>
+              <text class="lv" :class="'lv-' + r.q.level">{{ r.q.level }}</text>
+            </view>
+            <view class="row-poem">{{ firstCouplet(r.q.poem) }}</view>
+            <view class="row-meta muted">
+              <text>{{ time(r.at) }}</text>
+              <text v-if="r.topic"> · 问{{ topicName(r.topic) }}</text>
+              <text v-if="r.confirmed"> · 圣杯允签</text>
+            </view>
           </view>
         </view>
       </view>
-    </view>
 
-    <view v-if="!list.length" class="empty">
-      <image class="empty-tube" :src="art('tube')" mode="widthFix" />
-      <view class="muted">还没有求过签</view>
-      <view class="btn" @click="go">去求一签</view>
-    </view>
+      <view v-if="!list.length" class="empty">
+        <image class="empty-tube" :src="art('tube')" mode="widthFix" />
+        <view class="muted">还没有求过签</view>
+        <view class="btn" @click="go">去求一签</view>
+      </view>
 
-    <view v-if="list.length" class="clear muted" @click="clear">清空记录</view>
-    <view class="disclaimer">记录只保存在本机，最多保留 100 条</view>
+      <view v-if="list.length" class="clear muted" @click="clear">清空记录</view>
+      <view class="disclaimer">记录只保存在本机，最多保留 100 条</view>
+    </view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getHistory, clearHistory, today } from '../../utils/storage'

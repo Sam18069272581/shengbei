@@ -1,91 +1,96 @@
 <template>
   <view class="page">
-    <!-- 第一步：选事项与神明 -->
-    <block v-if="step === 'choose'">
-      <view class="section-title">一、所问何事</view>
-      <view class="chips">
-        <view v-for="t in TOPICS" :key="t.key" class="chip" :class="{ on: topic === t.key }" @click="pickTopic(t.key)">
-          {{ t.icon }} {{ t.name }}
-        </view>
-      </view>
-
-      <view class="section-title">二、向哪位神明求签</view>
-      <view class="god-grid">
-        <view
-          v-for="d in deities"
-          :key="d.id"
-          class="god-card"
-          :class="{ on: deityId === d.id }"
-          @click="deityId = d.id"
-        >
-          <view v-if="d.id === recommended" class="tag">推荐</view>
-          <DeityAvatar :id="d.id" :size="170" :mood="deityId === d.id ? 'laugh' : 'idle'" />
-          <view class="god-name">{{ d.name }}</view>
-          <view class="muted">{{ d.total }} 签 · {{ d.domains.slice(0, 2).join('、') }}</view>
-        </view>
-      </view>
-      <view v-if="!deities.length" class="muted">签文数据尚未生成，请先运行 npm run build:data</view>
-
-      <view class="tips muted">求签前心中默念姓名、生辰、住址，以及想问的事，越具体越好。</view>
-      <view class="btn" :class="{ disabled: !deityId }" @click="startShake">开始求签</view>
-    </block>
-
-    <!-- 第二步：摇签 -->
-    <block v-else-if="step === 'shake'">
-      <view class="muted center ask-line">所问：{{ topicName(topic) }}　第 {{ attempt }} 次求签</view>
-      <DeityAvatar :id="deityId" :size="220" :mood="shaking ? 'think' : drawn ? 'nod' : 'idle'" :bubble="shaking ? '诚心摇～' : drawn ? '就是这支' : '请摇签筒'" />
-      <view class="tube-wrap" @click="shakeTube">
-        <view class="tube" :class="{ shaking, done: !!drawn }">
-          <view class="sticks">
-            <view v-for="i in 11" :key="i" class="stick" :class="['s' + i, { jiggle: shaking }]" />
-          </view>
-          <image class="tube-img" :src="art('tube')" mode="widthFix" />
-        </view>
-        <view v-if="drawn" class="flying-stick" />
-        <view v-if="drawn" class="qian-card">
-          <view class="qian-card-inner">
-            <view class="qc-deity">{{ deityName }}</view>
-            <view class="qc-no">第{{ cnNumber(drawn) }}签</view>
-            <view class="qc-seal">灵</view>
+    <TempleScene :focus="shaking || jiaoState === 'tossing'" :blessed="step === 'confirm' && jiaoState === 'landed' && jiao?.kind === 'sheng'" :bless-key="landKey" />
+    <view class="page-body">
+      <!-- 第一步：选事项与神明 -->
+      <block v-if="step === 'choose'">
+        <view class="section-title">一、所问何事</view>
+        <view class="chips">
+          <view v-for="t in TOPICS" :key="t.key" class="chip" :class="{ on: topic === t.key }" @click="pickTopic(t.key)">
+            {{ t.icon }} {{ t.name }}
           </view>
         </view>
-      </view>
-      <view v-if="drawn" class="drawn">
-        掉出一支：<text class="drawn-no">第{{ cnNumber(drawn) }}签</text>
-      </view>
-      <view v-if="!drawn" class="btn" :class="{ disabled: shaking }" @click="shakeTube">
-        {{ shaking ? '签筒哗啦啦…' : '摇 签（或摇手机）' }}
-      </view>
-      <view v-else class="btn" @click="toConfirm">掷筊请示，确认此签</view>
-    </block>
 
-    <!-- 第三步：掷筊确认 -->
-    <block v-else-if="step === 'confirm'">
-      <view class="center-title">第{{ cnNumber(drawn) }}签 · 是否为此签？</view>
-      <DeityAvatar :id="deityId" :size="200" :mood="avatarMood" :mood-key="landKey" :bubble="avatarBubble" />
-      <JiaoBlocks :blocks="jiao ? jiao.blocks : [true, false]" :state="jiaoState" :land-key="landKey" />
-      <view v-if="jiao && jiaoState === 'landed'" class="center" :key="landKey">
-        <view class="jiao-name" :class="jiao.kind">{{ jiao.name }}</view>
-        <view class="muted">{{ confirmText }}</view>
-      </view>
+        <view class="section-title">二、向哪位神明求签</view>
+        <view class="god-grid">
+          <view
+            v-for="d in deities"
+            :key="d.id"
+            class="god-card"
+            :class="{ on: deityId === d.id }"
+            @click="deityId = d.id"
+          >
+            <view v-if="d.id === recommended" class="tag">推荐</view>
+            <DeityAvatar :id="d.id" :size="170" :mood="deityId === d.id ? 'laugh' : 'idle'" />
+            <view class="god-name">{{ d.name }}</view>
+            <view class="muted">{{ d.total }} 签 · {{ d.domains.slice(0, 2).join('、') }}</view>
+          </view>
+        </view>
+        <view v-if="!deities.length" class="muted">签文数据尚未生成，请先运行 npm run build:data</view>
 
-      <view v-if="!jiao || jiaoState === 'tossing'" class="btn gap" :class="{ disabled: jiaoState === 'tossing' }" @click="tossConfirm">
-        {{ jiaoState === 'tossing' ? '筊杯飞起来啦…' : '掷 筊' }}
-      </view>
-      <view v-else-if="jiao.kind === 'sheng'" class="btn gap glow" @click="openResult">圣筊应允，看签诗</view>
-      <view v-else-if="attempt < MAX_ATTEMPTS" class="btn gap" @click="redraw">重新求签</view>
-      <block v-else>
-        <view class="muted center gap">已求 {{ MAX_ATTEMPTS }} 次未得圣筊，或许时机未到，或问题还不够清楚。</view>
-        <view class="btn" @click="openResult">仍然看这支签</view>
-        <view class="btn ghost gap" @click="reset">改日再求</view>
+        <view class="tips muted">求签前心中默念姓名、生辰、住址，以及想问的事，越具体越好。</view>
+        <view class="btn" :class="{ disabled: !deityId }" @click="startShake">开始求签</view>
       </block>
-    </block>
 
-    <view class="disclaimer">仅供娱乐与传统文化体验</view>
+      <!-- 第二步：摇签 -->
+      <block v-else-if="step === 'shake'">
+        <view class="muted center ask-line">所问：{{ topicName(topic) }}　第 {{ attempt }} 次求签</view>
+        <DeityAvatar :id="deityId" :size="220" :mood="shaking ? 'think' : drawn ? 'nod' : 'idle'" :bubble="shaking ? '诚心摇～' : drawn ? '就是这支' : '请摇签筒'" />
+        <view class="tube-wrap" @click="shakeTube">
+          <view class="tube" :class="{ shaking, done: !!drawn }">
+            <view class="sticks">
+              <view v-for="i in 11" :key="i" class="stick" :class="['s' + i, { jiggle: shaking }]" />
+            </view>
+            <image class="tube-img" :src="art('tube')" mode="widthFix" />
+          </view>
+          <view v-if="drawn" class="flying-stick" />
+          <view v-if="drawn" class="qian-card">
+            <view class="qian-card-inner">
+              <view class="qc-deity">{{ deityName }}</view>
+              <view class="qc-no">第{{ cnNumber(drawn) }}签</view>
+              <view class="qc-seal">灵</view>
+            </view>
+          </view>
+        </view>
+        <view v-if="drawn" class="drawn">
+          掉出一支：<text class="drawn-no">第{{ cnNumber(drawn) }}签</text>
+        </view>
+        <view v-if="!drawn" class="btn" :class="{ disabled: shaking }" @click="shakeTube">
+          {{ shaking ? '签筒哗啦啦…' : '摇 签（或摇手机）' }}
+        </view>
+        <view v-else class="btn" @click="toConfirm">掷筊请示，确认此签</view>
+      </block>
+
+      <!-- 第三步：掷筊确认 -->
+      <block v-else-if="step === 'confirm'">
+        <view class="center-title">第{{ cnNumber(drawn) }}签 · 是否为此签？</view>
+        <DeityAvatar :id="deityId" :size="200" :mood="avatarMood" :mood-key="landKey" :bubble="avatarBubble" />
+        <JiaoBlocks :blocks="jiao ? jiao.blocks : [true, false]" :standing="jiao ? jiao.standing : -1" :state="jiaoState" :land-key="landKey" />
+        <view v-if="jiao && jiaoState === 'landed'" class="center" :key="landKey">
+          <view class="jiao-name" :class="[jiao.kind, { foil: jiao.kind === 'sheng' }]">{{ jiao.name }}</view>
+          <view class="muted">{{ confirmText }}</view>
+        </view>
+
+        <view v-if="!jiao || jiaoState === 'tossing'" class="btn gap" :class="{ disabled: jiaoState === 'tossing' }" @click="tossConfirm">
+          {{ jiaoState === 'tossing' ? '筊杯飞起来啦…' : '掷 筊' }}
+        </view>
+        <view v-else-if="jiao.kind === 'sheng'" class="btn gap glow" @click="openResult">圣筊应允，看签诗</view>
+        <view v-else-if="jiao.kind === 'li'" class="btn gap" @click="tossConfirm">立筊罕见，再掷一次</view>
+        <view v-else-if="attempt < MAX_ATTEMPTS" class="btn gap" @click="redraw">重新求签</view>
+        <block v-else>
+          <view class="muted center gap">已求 {{ MAX_ATTEMPTS }} 次未得圣筊，或许时机未到，或问题还不够清楚。</view>
+          <view class="btn" @click="openResult">仍然看这支签</view>
+          <view class="btn ghost gap" @click="reset">改日再求</view>
+        </block>
+      </block>
+
+      <view class="disclaimer">仅供娱乐与传统文化体验</view>
+    </view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { art } from '../../utils/art'
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
@@ -115,17 +120,18 @@ const landKey = ref(0)
 const confirmText = computed(() => {
   if (!jiao.value) return ''
   if (jiao.value.kind === 'sheng') return '神明应允，此签即为所求。'
+  if (jiao.value.kind === 'li') return '立筊：筊杯立而不倒，神明另有指示，再掷一次即可（不算一次求签）。'
   return jiao.value.kind === 'xiao' ? '笑筊：神明未明示，需重新求签。' : '阴筊：并非此签，需重新求签。'
 })
 const avatarMood = computed(() => {
   if (jiaoState.value === 'tossing') return 'think'
   if (!jiao.value) return 'idle'
-  return { sheng: 'nod', xiao: 'laugh', yin: 'shake' }[jiao.value.kind]
+  return { sheng: 'nod', xiao: 'laugh', yin: 'shake', li: 'laugh' }[jiao.value.kind]
 })
 const avatarBubble = computed(() => {
   if (jiaoState.value === 'tossing') return '……'
   if (!jiao.value) return '掷筊问我'
-  return { sheng: '正是此签！', xiao: '再求一次～', yin: '不是这支' }[jiao.value.kind]
+  return { sheng: '正是此签！', xiao: '再求一次～', yin: '不是这支', li: '咦，立住了！' }[jiao.value.kind]
 })
 
 onLoad((q) => {
@@ -300,6 +306,10 @@ onHide(shake.stop)
 .tube.shaking {
   animation: tubeshake 0.22s ease-in-out infinite alternate;
 }
+/* 摇动时签筒带残影和暖光 */
+.tube.shaking .tube-img {
+  filter: drop-shadow(0 0 30rpx rgba(255, 190, 110, 0.45)) drop-shadow(-14rpx 0 6rpx rgba(212, 175, 110, 0.25)) drop-shadow(14rpx 0 6rpx rgba(212, 175, 110, 0.25));
+}
 @keyframes tubeshake {
   from { transform: rotate(-14deg) translateY(-8rpx); }
   to { transform: rotate(14deg) translateY(0); }
@@ -359,7 +369,8 @@ onHide(shake.stop)
   height: 180rpx;
   margin-left: -11rpx;
   border-radius: 8rpx;
-  background: linear-gradient(#efdcae, #c9a466);
+  background: linear-gradient(#fff4d6, #c9a466);
+  box-shadow: 0 0 24rpx 6rpx rgba(255, 220, 150, 0.7), 0 60rpx 40rpx -10rpx rgba(255, 220, 150, 0.35);
   animation: stickout 0.8s cubic-bezier(0.3, 0.6, 0.4, 1) both;
 }
 @keyframes stickout {
@@ -391,6 +402,47 @@ onHide(shake.stop)
   align-items: center;
   padding-top: 22rpx;
   animation: cardflip 0.9s cubic-bezier(0.2, 1.3, 0.4, 1) 0.65s both;
+}
+.qian-card-inner {
+  position: relative;
+  overflow: hidden;
+}
+/* 签牌亮相后一道金光扫过 */
+.qian-card-inner::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -80%;
+  width: 50%;
+  background: linear-gradient(100deg, transparent, rgba(255, 252, 240, 0.85), transparent);
+  transform: skewX(-18deg);
+  animation: card-gleam 1s ease-in-out 1.5s both;
+}
+@keyframes card-gleam {
+  from { left: -80%; }
+  to { left: 140%; }
+}
+/* 签牌背后的光环 */
+.qian-card::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 520rpx;
+  height: 520rpx;
+  margin: -260rpx 0 0 -260rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 225, 160, 0.45), rgba(255, 200, 120, 0.12) 40%, transparent 68%);
+  animation: halo 1.2s ease-out 0.6s both, halo-breathe 3s ease-in-out 1.8s infinite;
+}
+@keyframes halo {
+  from { transform: scale(0.2); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes halo-breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.75; }
 }
 @keyframes cardflip {
   0% { transform: translateY(80rpx) rotateY(90deg) scale(0.3); opacity: 0; }
@@ -454,6 +506,7 @@ onHide(shake.stop)
 .jiao-name.sheng { color: $sb-red; }
 .jiao-name.xiao { color: #c9a35c; }
 .jiao-name.yin { color: #8c847c; }
+.jiao-name.li { color: #e9c77e; }
 .glow {
   animation: glow 1.4s ease-in-out infinite;
 }

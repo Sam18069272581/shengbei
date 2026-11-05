@@ -1,69 +1,73 @@
 <template>
   <view class="page">
-    <view class="card head">
-      <view class="muted">{{ f.date }} · 农历{{ f.hl.lunar.text }} · {{ f.hl.ganzhi.day }}日</view>
-      <view class="saying">
-        <view v-if="f.saying.occasion" class="saying-tag">{{ f.saying.occasion }}</view>
-        <view v-for="(l, i) in sayingLines" :key="i" class="saying-text">{{ l }}</view>
-        <view class="saying-from">—— {{ f.saying.from }}</view>
+    <TempleScene />
+    <view class="page-body">
+      <view class="card head">
+        <view class="muted">{{ f.date }} · 农历{{ f.hl.lunar.text }} · {{ f.hl.ganzhi.day }}日</view>
+        <view class="saying">
+          <view v-if="f.saying.occasion" class="saying-tag">{{ f.saying.occasion }}</view>
+          <view v-for="(l, i) in sayingLines" :key="i" class="saying-text">{{ l }}</view>
+          <view class="saying-from">—— {{ f.saying.from }}</view>
+        </view>
+        <view class="overall">
+          今日综合
+          <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= f.overall }" :style="{ animationDelay: 0.2 + i * 0.15 + 's' }">★</text>
+        </view>
+        <view class="lucky muted">幸运色 {{ f.color }} · 幸运数字 {{ f.number }}</view>
       </view>
-      <view class="overall">
-        今日综合
-        <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= f.overall }" :style="{ animationDelay: 0.2 + i * 0.15 + 's' }">★</text>
-      </view>
-      <view class="lucky muted">幸运色 {{ f.color }} · 幸运数字 {{ f.number }}</view>
-    </view>
 
-    <view class="card">
-      <view class="section-title">分项运势</view>
-      <view v-for="(a, idx) in f.aspects" :key="a.key" class="aspect">
-        <text class="aspect-name">{{ a.name }}</text>
-        <view class="bar"><view class="bar-fill" :style="{ width: a.stars * 20 + '%', animationDelay: 0.3 + idx * 0.15 + 's' }" /></view>
-        <text class="aspect-stars">{{ '★'.repeat(a.stars) }}</text>
+      <view class="card">
+        <view class="section-title">分项运势</view>
+        <view v-for="(a, idx) in f.aspects" :key="a.key" class="aspect">
+          <text class="aspect-name">{{ a.name }}</text>
+          <view class="bar"><view class="bar-fill" :style="{ width: a.stars * 20 + '%', animationDelay: 0.3 + idx * 0.15 + 's' }" /></view>
+          <text class="aspect-stars">{{ '★'.repeat(a.stars) }}</text>
+        </view>
       </view>
-    </view>
 
-    <view class="card hl" @click="openHuangli">
-      <view class="hl-head">
-        <text class="section-title">今日黄历</text>
-        <text class="hl-type" :class="f.hl.tianshen.type === '黄道' ? 'good' : ''">{{ f.hl.tianshen.type }}日 · {{ f.hl.zhixing }}</text>
+      <view class="card hl" @click="openHuangli">
+        <view class="hl-head">
+          <text class="section-title">今日黄历</text>
+          <text class="hl-type" :class="f.hl.tianshen.type === '黄道' ? 'good' : ''">{{ f.hl.tianshen.type }}日 · {{ f.hl.zhixing }}</text>
+        </view>
+        <view v-if="f.hl.festivals.length || f.hl.jieqi.today" class="hl-fest">
+          {{ [f.hl.jieqi.today ? '今日' + f.hl.jieqi.name : '', ...f.hl.festivals].filter(Boolean).join(' · ') }}
+        </view>
+        <view class="hl-line"><text class="hl-mark yi">宜</text><text class="hl-items">{{ f.hl.yi.slice(0, 8).join(' ') }}</text></view>
+        <view class="hl-line"><text class="hl-mark ji">忌</text><text class="hl-items">{{ f.hl.ji.slice(0, 8).join(' ') }}</text></view>
+        <view class="muted hl-foot">{{ f.hl.chong }} {{ f.hl.sha }} · 财神{{ f.hl.position.cai }}</view>
+        <view class="muted">查看完整黄历 ›</view>
       </view>
-      <view v-if="f.hl.festivals.length || f.hl.jieqi.today" class="hl-fest">
-        {{ [f.hl.jieqi.today ? '今日' + f.hl.jieqi.name : '', ...f.hl.festivals].filter(Boolean).join(' · ') }}
-      </view>
-      <view class="hl-line"><text class="hl-mark yi">宜</text><text class="hl-items">{{ f.hl.yi.slice(0, 8).join(' ') }}</text></view>
-      <view class="hl-line"><text class="hl-mark ji">忌</text><text class="hl-items">{{ f.hl.ji.slice(0, 8).join(' ') }}</text></view>
-      <view class="muted hl-foot">{{ f.hl.chong }} {{ f.hl.sha }} · 财神{{ f.hl.position.cai }}</view>
-      <view class="muted">查看完整黄历 ›</view>
-    </view>
 
-    <view class="section-title">我的今日小贴士</view>
-    <view class="card yiji">
-      <view class="col">
-        <view class="yi-title">宜</view>
-        <view v-for="x in f.yi" :key="x" class="item">{{ x }}</view>
+      <view class="section-title">我的今日小贴士</view>
+      <view class="card yiji">
+        <view class="col">
+          <view class="yi-title">宜</view>
+          <view v-for="x in f.yi" :key="x" class="item">{{ x }}</view>
+        </view>
+        <view class="col">
+          <view class="ji-title">忌</view>
+          <view v-for="x in f.ji" :key="x" class="item">{{ x }}</view>
+        </view>
       </view>
-      <view class="col">
-        <view class="ji-title">忌</view>
-        <view v-for="x in f.ji" :key="x" class="item">{{ x }}</view>
-      </view>
-    </view>
 
-    <view class="card qian-card" v-if="f.qian" @click="openQian">
-      <view class="qian-god"><DeityAvatar :id="f.qian.deityId" :size="140" /></view>
-      <view class="section-title">今日一签</view>
-      <view class="muted qian-from">{{ f.qian.deityName }} · 第{{ cnNumber(f.qian.no) }}签</view>
-      <view class="poem">
-        <text>{{ poemText }}</text>
+      <view class="card qian-card" v-if="f.qian" @click="openQian">
+        <view class="qian-god"><DeityAvatar :id="f.qian.deityId" :size="140" /></view>
+        <view class="section-title">今日一签</view>
+        <view class="muted qian-from">{{ f.qian.deityName }} · 第{{ cnNumber(f.qian.no) }}签</view>
+        <view class="poem">
+          <text>{{ poemText }}</text>
+        </view>
+        <view class="muted">点击查看解签 ›</view>
       </view>
-      <view class="muted">点击查看解签 ›</view>
-    </view>
 
-    <view class="disclaimer">每日运势按日期生成，同一天结果不变，仅供娱乐</view>
+      <view class="disclaimer">每日运势按日期生成，同一天结果不变，仅供娱乐</view>
+    </view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { dailyFortune } from '../../utils/daily'
 import { cnNumber } from '../../utils/qian'
 import DeityAvatar from '../../components/DeityAvatar.vue'

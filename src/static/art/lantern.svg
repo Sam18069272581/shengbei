@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 170">
+<defs>
+<radialGradient id="l" cx=".45" cy=".45" r=".6"><stop offset="0" stop-color="#ffcf7a"/><stop offset=".45" stop-color="#e0503a"/><stop offset="1" stop-color="#7a1a12"/></radialGradient>
+<linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e2b0"/><stop offset="1" stop-color="#a87c3e"/></linearGradient>
+</defs>
+<line x1="40" y1="0" x2="40" y2="30" stroke="#a87c3e" stroke-width="1.5"/>
+<rect x="26" y="28" width="28" height="8" rx="2" fill="url(#gd)"/>
+<ellipse cx="40" cy="76" rx="34" ry="42" fill="url(#l)"/>
+<g fill="none" stroke="#5a120c" stroke-opacity=".55" stroke-width="1.2">
+<ellipse cx="40" cy="76" rx="22" ry="42"/><ellipse cx="40" cy="76" rx="10" ry="42"/>
+</g>
+<text x="40" y="84" text-anchor="middle" font-size="20" font-family="serif" fill="#f6e2b0" fill-opacity=".85">福</text>
+<rect x="26" y="116" width="28" height="8" rx="2" fill="url(#gd)"/>
+<g stroke="#c4473a" stroke-width="2"><line x1="34" y1="124" x2="33" y2="166"/><line x1="40" y1="124" x2="40" y2="168"/><line x1="46" y1="124" x2="47" y2="166"/></g>
+<circle cx="40" cy="128" r="3" fill="url(#gd)"/>
+</svg>

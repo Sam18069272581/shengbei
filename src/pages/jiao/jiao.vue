@@ -1,61 +1,66 @@
 <template>
   <view class="page">
-    <view class="gods">
-      <view
-        v-for="d in deities"
-        :key="d.id"
-        class="god-chip"
-        :class="{ on: deityId === d.id }"
-        @click="pickDeity(d.id)"
-      >
-        <image class="god-chip-img" :src="art(d.id)" mode="widthFix" />
-        <text>{{ d.name }}</text>
+    <TempleScene :focus="state === 'tossing'" :blessed="state === 'landed' && current?.kind === 'sheng'" :bless-key="landKey" />
+    <view class="page-body">
+      <view class="gods">
+        <view
+          v-for="d in deities"
+          :key="d.id"
+          class="god-chip"
+          :class="{ on: deityId === d.id }"
+          @click="pickDeity(d.id)"
+        >
+          <image class="god-chip-img" :src="art(d.id)" mode="widthFix" />
+          <text>{{ d.name }}</text>
+        </view>
       </view>
-    </view>
 
-    <view class="stage">
-      <DeityAvatar :id="deityId" :size="260" :mood="mood" :mood-key="landKey" :bubble="bubble" />
-      <JiaoBlocks :blocks="current ? current.blocks : [true, false]" :state="state" :land-key="landKey" />
-    </view>
-
-    <view class="result" v-if="showResult">
-      <view class="result-name" :class="current.kind" :key="landKey">{{ current.name }}</view>
-      <view class="muted">{{ current.desc }}</view>
-    </view>
-    <view class="result" v-if="!showResult">
-      <input v-model="question" class="input" placeholder="心中默念姓名，写下想问的事（可不填）" maxlength="40" />
-    </view>
-
-    <view class="streak" v-if="streak > 0">
-      <text v-for="i in Math.min(streak, 3)" :key="i" class="cup">圣</text>
-      连续圣筊 {{ streak }} 次<text v-if="streak >= 3">，神明确认无疑！</text>
-    </view>
-
-    <view class="btn" :class="{ disabled: state === 'tossing' }" @click="toss">
-      {{ state === 'tossing' ? '筊杯飞起来啦…' : current ? '再掷一次' : '掷 筊' }}
-    </view>
-    <view class="muted center">手机也可以摇一摇</view>
-
-    <view class="card history" v-if="records.length">
-      <view class="section-title">本次记录</view>
-      <view v-for="(r, i) in records" :key="i" class="record">
-        <text>第 {{ records.length - i }} 掷</text>
-        <text :class="r.kind">{{ r.name }}</text>
+      <view class="stage">
+        <DeityAvatar :id="deityId" :size="260" :mood="mood" :mood-key="landKey" :bubble="bubble" />
+        <JiaoBlocks :blocks="current ? current.blocks : [true, false]" :standing="current ? current.standing : -1" :state="state" :land-key="landKey" />
       </view>
-    </view>
 
-    <view class="card">
-      <view class="section-title">怎么看筊</view>
-      <view class="rule"><text class="sheng">圣筊</text> 一平一凸：神明应允，可以去做。</view>
-      <view class="rule"><text class="xiao">笑筊</text> 两平：神明笑而不答，问题可能没问清楚。</view>
-      <view class="rule"><text class="yin">阴筊</text> 两凸：神明不认同，或时机未到。</view>
-      <view class="muted">重大事情习惯求「三圣筊」，连续三次圣筊才算确认。</view>
+      <view class="result" v-if="showResult">
+        <view class="result-name" :class="[current.kind, { foil: current.kind === 'sheng' }]" :key="landKey">{{ current.name }}</view>
+        <view class="muted">{{ current.desc }}</view>
+      </view>
+      <view class="result" v-if="!showResult">
+        <input v-model="question" class="input" placeholder="心中默念姓名，写下想问的事（可不填）" maxlength="40" />
+      </view>
+
+      <view class="streak" v-if="streak > 0">
+        <text v-for="i in Math.min(streak, 3)" :key="i" class="cup">圣</text>
+        连续圣筊 {{ streak }} 次<text v-if="streak >= 3">，神明确认无疑！</text>
+      </view>
+
+      <view class="btn" :class="{ disabled: state === 'tossing' }" @click="toss">
+        {{ state === 'tossing' ? '筊杯飞起来啦…' : current ? '再掷一次' : '掷 筊' }}
+      </view>
+      <view class="muted center">手机也可以摇一摇</view>
+
+      <view class="card history" v-if="records.length">
+        <view class="section-title">本次记录</view>
+        <view v-for="(r, i) in records" :key="i" class="record">
+          <text>第 {{ records.length - i }} 掷</text>
+          <text :class="r.kind">{{ r.name }}</text>
+        </view>
+      </view>
+
+      <view class="card">
+        <view class="section-title">怎么看筊</view>
+        <view class="rule"><text class="sheng">圣筊</text> 一平一凸：神明应允，可以去做。</view>
+        <view class="rule"><text class="xiao">笑筊</text> 两平：神明笑而不答，问题可能没问清楚。</view>
+        <view class="rule"><text class="yin">阴筊</text> 两凸：神明不认同，或时机未到。</view>
+      <view class="rule"><text class="li">立筊</text> 筊杯立而不倒：极罕见，神明另有指示，重掷即可。</view>
+        <view class="muted">重大事情习惯求「三圣筊」，连续三次圣筊才算确认。</view>
+      </view>
+      <view class="disclaimer">仅供娱乐与传统文化体验</view>
     </view>
-    <view class="disclaimer">仅供娱乐与传统文化体验</view>
   </view>
 </template>
 
 <script setup>
+import TempleScene from '../../components/TempleScene.vue'
 import { art } from '../../utils/art'
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
@@ -77,6 +82,7 @@ const REACT = {
   sheng: { mood: 'nod', bubble: ['允！', '可行～', '去吧！'] },
   xiao: { mood: 'laugh', bubble: ['哈哈，再想想？', '问清楚些～', '嘻嘻'] },
   yin: { mood: 'shake', bubble: ['不妥不妥', '时机未到', '再斟酌'] },
+  li: { mood: 'laugh', bubble: ['咦！立住了', '另有指示～', '难得一见'] },
 }
 const mood = computed(() => (state.value === 'tossing' ? 'think' : state.value === 'landed' && current.value ? REACT[current.value.kind].mood : 'idle'))
 const bubble = computed(() => {
@@ -182,6 +188,7 @@ onHide(shake.stop)
 .sheng { color: $sb-red; }
 .xiao { color: #c9a35c; }
 .yin { color: #8c847c; }
+.li { color: #e9c77e; }
 .streak {
   text-align: center;
   color: $sb-red;
