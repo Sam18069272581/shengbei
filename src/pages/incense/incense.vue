@@ -1,7 +1,10 @@
 <template>
   <view class="page">
     <TempleScene :blessed="justLit" :bless-key="litKey" />
-    <view class="page-body">
+    <view v-if="!deities.length" class="page-body">
+      <NoDeityData />
+    </view>
+    <view v-else class="page-body">
       <view class="gods">
         <view v-for="d in deities" :key="d.id" class="god-chip" :class="{ on: deityId === d.id }" @click="pick(d.id)">
           <image class="god-chip-img" :src="art(d.id)" mode="widthFix" />
@@ -86,6 +89,7 @@
 <script setup>
 import TempleScene from '../../components/TempleScene.vue'
 import DeityAvatar from '../../components/DeityAvatar.vue'
+import NoDeityData from '../../components/NoDeityData.vue'
 import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import { art } from '../../utils/art'
@@ -95,7 +99,9 @@ import { getIncense, lightIncense, incenseStreak, BURN_MS, today } from '../../u
 
 const deities = listDeities()
 const state = ref(getIncense())
-const deityId = ref(state.value.last?.deityId || deities[0]?.id || 'mazu')
+// 上次拜的神明若已不在数据里（数据更新），改用第一位
+const lastDeity = state.value.last?.deityId
+const deityId = ref(deities.some((d) => d.id === lastDeity) ? lastDeity : deities[0]?.id || '')
 const wish = ref('')
 const now = ref(Date.now())
 const litKey = ref(0)
@@ -151,6 +157,7 @@ function pick(id) {
 }
 
 function light() {
+  if (!deityId.value) return
   state.value = lightIncense({ deityId: deityId.value, wish: wish.value.trim() })
   wish.value = ''
   now.value = Date.now()

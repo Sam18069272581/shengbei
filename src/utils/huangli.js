@@ -1,5 +1,6 @@
 // 黄历：农历、干支、宜忌、冲煞等，全部由 lunar-javascript（MIT）离线推算，不联网
 import { Solar } from 'lunar-javascript'
+import { parseYmd, ymdParts } from './date'
 
 const WEEK = ['日', '一', '二', '三', '四', '五', '六']
 const DAY_MS = 86400000
@@ -17,23 +18,18 @@ const SHEN_DAN = {
   '9-19': '观音出家日',
 }
 
-const parse = (date) => {
-  if (date instanceof Date) return date
-  const [y, m, d] = String(date).split('-').map(Number)
-  return new Date(y, m - 1, d)
-}
-const ymd = (d) => [d.getFullYear(), d.getMonth() + 1, d.getDate()]
 
 // 农历短文本，如「九月廿六」
 export function lunarText(date = new Date()) {
-  const l = Solar.fromYmd(...ymd(parse(date))).getLunar()
+  const l = Solar.fromYmd(...ymdParts(date)).getLunar()
   return `${l.getMonthInChinese()}月${l.getDayInChinese()}`
 }
 
 // 某天的完整黄历
 export function huangli(date = new Date()) {
-  const d = parse(date)
-  const solar = Solar.fromYmd(...ymd(d))
+  // 统一归到当天 0 点：传入的 new Date() 带着时分，直接与节气当天 0 点相减，过了中午会少算一天
+  const d = parseYmd(date)
+  const solar = Solar.fromYmd(...ymdParts(d))
   const l = solar.getLunar()
 
   // 当天交节就显示当天节气，否则显示下一个节气及剩余天数

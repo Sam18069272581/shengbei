@@ -52,9 +52,18 @@ export function getQian(deityId, no) {
 export const LEVEL_SCORE = { 上上: 5, 上: 4, 中: 3, 下: 2, 下下: 1 }
 
 const CN_NUM = '零一二三四五六七八九'
+// 签号转中文（1–999）：十一、二十、一百零一、一百一十
 export function cnNumber(n) {
-  if (n <= 10) return n === 10 ? '十' : CN_NUM[n]
-  if (n < 20) return '十' + CN_NUM[n - 10]
-  if (n < 100) return CN_NUM[Math.floor(n / 10)] + '十' + (n % 10 ? CN_NUM[n % 10] : '')
-  return '一百'
+  if (!Number.isInteger(n) || n < 1 || n > 999) throw new RangeError(`签号超出范围：${n}`)
+  const h = Math.floor(n / 100)
+  const t = Math.floor((n % 100) / 10)
+  const u = n % 10
+  if (!h) return (t ? (t === 1 ? '' : CN_NUM[t]) + '十' : '') + (u ? CN_NUM[u] : '')
+  let s = CN_NUM[h] + '百'
+  if (t) s += CN_NUM[t] + '十'
+  else if (u) s += '零'
+  return s + (u ? CN_NUM[u] : '')
 }
+
+// 去掉句末标点：签诗有的自带标点，有的没有，展示前先统一
+export const stripEndPunct = (line) => line.replace(/[，。！？；、]$/, '')

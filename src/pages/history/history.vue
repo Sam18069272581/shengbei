@@ -53,16 +53,17 @@ import TempleScene from '../../components/TempleScene.vue'
 import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getHistory, clearHistory, today } from '../../utils/storage'
-import { getQian, cnNumber, topicName, LEVEL_SCORE } from '../../utils/qian'
+import { getQian, cnNumber, topicName, LEVEL_SCORE, stripEndPunct } from '../../utils/qian'
 import { art } from '../../utils/art'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 
 const list = ref([])
 // 签文数据更新后旧记录可能失效，过滤掉找不到的签
 const load = () => {
-  list.value = getHistory()
-    .map((r) => ({ ...r, q: getQian(r.deityId, r.no) }))
-    .filter((r) => r.q)
+  const all = getHistory().map((r) => ({ ...r, q: getQian(r.deityId, r.no) }))
+  list.value = all.filter((r) => r.q)
+  const gone = all.length - list.value.length
+  if (gone) console.warn(`[history] ${gone} 条记录对应的签已不在签文数据里，未显示`)
 }
 onShow(load)
 
@@ -96,7 +97,7 @@ const time = (at) => {
 }
 
 // 签诗前两句；有的句子自带标点，先去掉再统一用逗号连接
-const firstCouplet = (poem) => poem.slice(0, 2).map((l) => l.replace(/[，。！？；、]$/, '')).join('，')
+const firstCouplet = (poem) => poem.slice(0, 2).map(stripEndPunct).join('，')
 
 const open = (r) => uni.navigateTo({ url: `/pages/result/result?deity=${r.deityId}&no=${r.no}&topic=${r.topic || ''}` })
 const go = () => uni.navigateTo({ url: '/pages/qiuqian/qiuqian' })

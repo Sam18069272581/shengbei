@@ -1,7 +1,10 @@
 <template>
   <view class="page">
     <TempleScene :focus="state === 'tossing'" :blessed="state === 'landed' && current?.kind === 'sheng'" :bless-key="landKey" />
-    <view class="page-body">
+    <view v-if="!deities.length" class="page-body">
+      <NoDeityData />
+    </view>
+    <view v-else class="page-body">
       <view class="gods">
         <view
           v-for="d in deities"
@@ -66,13 +69,14 @@ import { ref, computed } from 'vue'
 import { onLoad, onShow, onHide } from '@dcloudio/uni-app'
 import JiaoBlocks from '../../components/JiaoBlocks.vue'
 import DeityAvatar from '../../components/DeityAvatar.vue'
+import NoDeityData from '../../components/NoDeityData.vue'
 import { throwJiao } from '../../utils/jiao'
 import { play } from '../../utils/sound'
 import { listDeities } from '../../utils/qian'
 import { useShake } from '../../utils/shake'
 
 const deities = listDeities()
-const deityId = ref(deities[0]?.id || 'mazu')
+const deityId = ref(deities[0]?.id || '')
 const question = ref('')
 const current = ref(null)
 const state = ref('idle')
@@ -118,7 +122,7 @@ function pickDeity(id) {
 }
 
 function toss() {
-  if (state.value === 'tossing') return
+  if (!deities.length || state.value === 'tossing') return
   state.value = 'tossing'
   setTimeout(() => {
     current.value = throwJiao()

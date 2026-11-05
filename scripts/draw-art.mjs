@@ -220,19 +220,6 @@ ${face({ mouth: 'open', brows: `<path d="M72 84 Q81 78 90 84 M110 84 Q119 78 128
 <text x="100" y="54" font-size="9" text-anchor="middle" fill="#9a2418" font-family="'Songti SC','STSong','Noto Serif SC',serif" font-weight="bold">财</text>
 </g>`)
 
-// 筊杯 -----------------------------------------------------------------------
-const jiaoPath = 'M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z'
-const jiaoFlat = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c79a62"/><stop offset="1" stop-color="#f0d6a2"/></linearGradient></defs>
-<path d="${jiaoPath}" fill="url(#w)" stroke="${GOLD}" stroke-width="2.5"/>
-<path d="M54 30 C40 62 36 120 54 166 M40 44 C28 76 28 120 40 154" stroke="#9c7442" stroke-width="1.2" fill="none" opacity=".55"/>
-</svg>`
-const jiaoRound = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<defs><radialGradient id="g" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#e2604e"/><stop offset=".5" stop-color="#9a2418"/><stop offset="1" stop-color="#4a0d08"/></radialGradient></defs>
-<path d="${jiaoPath}" fill="url(#g)" stroke="${GOLD}" stroke-width="2.5"/>
-<path d="M30 40 C20 70 20 110 28 140" stroke="#fff" stroke-width="4" fill="none" opacity=".25" stroke-linecap="round"/>
-</svg>`
-
 const cloud = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
 <path d="M10 50 Q0 50 4 40 Q8 30 22 33 Q22 16 42 16 Q54 4 72 12 Q88 4 100 18 Q122 14 126 32 Q144 32 146 44 Q148 52 136 50Z M40 40 q10 -12 20 -2 q10 10 -2 14 M92 36 q12 -12 22 0" fill="none" stroke="${GOLD}" stroke-width="1.4" stroke-linecap="round"/>
 </svg>`

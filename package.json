@@ -6,7 +6,9 @@
     "dev:h5": "npm run build:data && uni",
     "build:h5": "npm run build:data && uni build",
     "dev:mp-weixin": "npm run build:data && uni -p mp-weixin",
-    "build:mp-weixin": "npm run build:data && uni build -p mp-weixin && node scripts/check-mp-size.mjs"
+    "build:mp-weixin": "npm run build:data && uni build -p mp-weixin && node scripts/check-mp-size.mjs",
+    "lint": "eslint .",
+    "test": "npm run build:data && vitest run"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-5030420261029002",
@@ -35,10 +37,15 @@
     "@dcloudio/uni-cli-shared": "3.0.0-5030420261029002",
     "@dcloudio/uni-stacktracey": "3.0.0-5030420261029002",
     "@dcloudio/vite-plugin-uni": "3.0.0-5030420261029002",
+    "@eslint/js": "^9.39.5",
     "@vue/runtime-core": "^3.4.21",
+    "eslint": "^9.39.5",
+    "eslint-plugin-vue": "^9.33.0",
+    "globals": "^15.15.0",
     "rollup": "4.14.3",
     "sass": "^1.77.8",
-    "vite": "5.2.8"
+    "vite": "5.2.8",
+    "vitest": "^1.6.1"
   },
   "private": true
 }

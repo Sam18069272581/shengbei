@@ -20,7 +20,7 @@
 <script setup>
 import { ref, getCurrentInstance } from 'vue'
 import { art } from '../utils/art'
-import { cnNumber } from '../utils/qian'
+import { cnNumber, stripEndPunct } from '../utils/qian'
 import { huangli } from '../utils/huangli'
 import { today } from '../utils/storage'
 
@@ -49,11 +49,21 @@ async function loadImage(src) {
         .replace(/animation:[^;}]+;?/g, '')
         .replace(/stroke-dashoffset:\s*\d+/g, 'stroke-dashoffset:0')
       return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
-    } catch {
+    } catch (e) {
+      console.warn('[share] 读取神明像 SVG 失败，改用原图（可能只画出第一帧）', e)
       return src
     }
   }
-  return new Promise((resolve) => uni.getImageInfo({ src, success: (r) => resolve(r.path), fail: () => resolve('') }))
+  return new Promise((resolve) =>
+    uni.getImageInfo({
+      src,
+      success: (r) => resolve(r.path),
+      fail: (e) => {
+        console.warn('[share] 取神明像本地路径失败，签卡不画神明像', e)
+        resolve('')
+      },
+    }),
+  )
 }
 
 async function draw() {
@@ -114,7 +124,7 @@ async function draw() {
   const lines = q.poem.slice(0, 4)
   const lh = 38
   const top = py + 136 + ((4 - lines.length) * lh) / 2
-  lines.forEach((l, i) => text(l.replace(/[，。！？；、]$/, ''), W / 2, top + i * lh, 21, INK))
+  lines.forEach((l, i) => text(stripEndPunct(l), W / 2, top + i * lh, 21, INK))
 
   if (q.title) text(`典故：${q.title}`, W / 2, py + ph - 18, 11, '#7a6448')
 
@@ -141,6 +151,7 @@ async function open() {
   try {
     img.value = await draw()
   } catch (e) {
+    console.error('[share] 签卡生成失败', e)
     show.value = false
     uni.showToast({ title: '签卡生成失败', icon: 'none' })
   }

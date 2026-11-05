@@ -92,7 +92,7 @@ import TempleScene from '../../components/TempleScene.vue'
 import { reactive, ref } from 'vue'
 import { dailyFortune } from '../../utils/daily'
 import { getProfile, setProfile } from '../../utils/storage'
-import { cnNumber } from '../../utils/qian'
+import { cnNumber, stripEndPunct } from '../../utils/qian'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 
 const f = reactive(dailyFortune())
@@ -105,7 +105,7 @@ function onBirthday(e) {
 }
 // 有的签诗自带标点，有的没有：没有标点的句子补上逗号/句号
 const poemText = f.qian
-  ? f.qian.poem.map((l, i) => (/[，。！？；、]$/.test(l) ? l : l + (i < f.qian.poem.length - 1 ? '，' : '。'))).join('')
+  ? f.qian.poem.map((l, i) => (stripEndPunct(l) !== l ? l : l + (i < f.qian.poem.length - 1 ? '，' : '。'))).join('')
   : ''
 // 签语按逗号分行，避免长句折行时只剩一个字
 const sayingLines = f.saying.text.replace(/？/g, '？，').split('，').filter(Boolean)
