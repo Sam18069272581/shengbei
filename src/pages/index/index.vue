@@ -2,6 +2,7 @@
   <view class="page">
     <TempleScene eave />
     <view class="page-body">
+      <view class="sound-btn" :class="{ off: !sound }" @click="toggleSound">{{ sound ? '♪ 音效开' : '♪ 音效关' }}</view>
       <view class="hero">
         <CloudLayer class="hero-clouds" />
         <view class="hero-title">
@@ -23,6 +24,10 @@
           <text class="muted">农历{{ fortune.hl.lunar.text }}</text>
         </view>
         <view class="today-saying">「{{ fortune.saying.text }}」</view>
+        <view v-if="fortune.zodiac" class="today-zodiac">
+          <text class="tz-tag" :class="{ bad: !fortune.zodiac.good }">{{ fortune.zodiac.tag }}</text>
+          <text>属{{ fortune.zodiac.animal }} · {{ fortune.zodiac.text.split('，')[0] }}</text>
+        </view>
         <view class="stars">
           <text v-for="i in 5" :key="i" class="star" :class="{ on: i <= fortune.overall }" :style="{ animationDelay: i * 0.12 + 's' }">★</text>
         </view>
@@ -59,6 +64,10 @@
         </view>
       </view>
 
+      <view class="history-link" @click="go('/pages/incense/incense')">
+        <text>上香祈福</text>
+        <text class="muted">{{ incenseStreakDays ? `已连续 ${incenseStreakDays} 天` : '敬香三炷，许个心愿' }} ›</text>
+      </view>
       <view class="history-link" @click="go('/pages/history/history')">
         <text>我的签</text>
         <text class="muted">{{ historyCount ? `已求 ${historyCount} 签` : '还没有求过签' }} ›</text>
@@ -84,16 +93,24 @@ import { ref } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
 import { TOPICS, listDeities } from '../../utils/qian'
 import { dailyFortune } from '../../utils/daily'
-import { getHistory } from '../../utils/storage'
+import { getHistory, incenseStreak } from '../../utils/storage'
+import { soundOn, setSound, play } from '../../utils/sound'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import CloudLayer from '../../components/CloudLayer.vue'
 
 const deities = listDeities()
 const fortune = ref(dailyFortune())
 const historyCount = ref(getHistory().length)
+const incenseStreakDays = ref(incenseStreak())
+const sound = ref(soundOn())
+function toggleSound() {
+  sound.value = !sound.value
+  setSound(sound.value)
+  if (sound.value) play('chime', { volume: 0.5 })
+}
 
 // 神明轮流打招呼
-const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～' }
+const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～', guanyin: '平安喜乐～', caishen: '财源广进！' }
 const greeting = (d) => GREET[d.id] || '有求必应'
 const greetId = ref('')
 let timer = null
@@ -101,6 +118,7 @@ let idx = 0
 onShow(() => {
   fortune.value = dailyFortune()
   historyCount.value = getHistory().length
+  incenseStreakDays.value = incenseStreak()
   clearInterval(timer)
   const tick = () => {
     greetId.value = deities[idx % deities.length]?.id || ''
@@ -115,9 +133,43 @@ const go = (url) => uni.navigateTo({ url })
 </script>
 
 <style lang="scss" scoped>
+.sound-btn {
+  position: absolute;
+  z-index: 3;
+  top: 14rpx;
+  right: 120rpx;
+  padding: 4rpx 18rpx;
+  border: 1rpx solid $sb-line;
+  border-radius: 30rpx;
+  background: rgba(20, 16, 12, 0.6);
+  color: $sb-gold;
+  font-size: 22rpx;
+}
+.sound-btn.off {
+  color: $sb-muted;
+}
 /* 祥云放在殿檐下方 */
 .hero-clouds {
   top: 120rpx !important;
+}
+.today-zodiac {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx;
+  margin: 6rpx 0;
+  font-size: 24rpx;
+  color: $sb-muted;
+}
+.tz-tag {
+  padding: 0 10rpx;
+  border-radius: 4rpx;
+  background: $sb-vermilion;
+  color: #f6e9d0;
+  font-size: 22rpx;
+}
+.tz-tag.bad {
+  background: #4a4440;
 }
 .today-saying {
   margin: 8rpx 0 4rpx;

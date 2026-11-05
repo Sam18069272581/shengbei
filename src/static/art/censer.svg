@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220">
+<!-- 三足香炉：青铜鎏金，双耳，炉口积香灰 -->
+<defs>
+<linearGradient id="bz" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a2614"/><stop offset=".25" stop-color="#8a6234"/><stop offset=".45" stop-color="#d9b06a"/><stop offset=".6" stop-color="#9a6e38"/><stop offset="1" stop-color="#2e1e10"/></linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3c1c"/><stop offset=".45" stop-color="#f0d39a"/><stop offset="1" stop-color="#4a3018"/></linearGradient>
+<radialGradient id="ash" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#9a9088"/><stop offset="1" stop-color="#4a423c"/></radialGradient>
+</defs>
+<!-- 双耳 -->
+<path d="M58 70 C40 70 34 40 52 34 L62 34 C50 40 52 60 66 62Z" fill="url(#rim)"/>
+<path d="M242 70 C260 70 266 40 248 34 L238 34 C250 40 248 60 234 62Z" fill="url(#rim)"/>
+<!-- 三足 -->
+<path d="M84 160 L70 212 L88 212 L104 166Z" fill="url(#bz)"/>
+<path d="M216 160 L230 212 L212 212 L196 166Z" fill="url(#bz)"/>
+<path d="M142 172 L140 214 L160 214 L158 172Z" fill="url(#bz)"/>
+<!-- 炉身 -->
+<path d="M52 66 H248 C250 120 220 172 150 176 C80 172 50 120 52 66Z" fill="url(#bz)"/>
+<!-- 腰带纹饰 -->
+<path d="M58 98 H242" stroke="#f0d39a" stroke-opacity=".5" stroke-width="2"/>
+<path d="M62 108 H238" stroke="#2a1a0c" stroke-opacity=".5" stroke-width="1.5"/>
+<g fill="none" stroke="#f0d39a" stroke-opacity=".35" stroke-width="1.5">
+<path d="M90 130 c8 -10 18 -10 22 0 c4 10 14 10 22 0"/><path d="M166 130 c8 -10 18 -10 22 0 c4 10 14 10 22 0"/>
+</g>
+<text x="150" y="146" text-anchor="middle" font-size="26" font-family="serif" fill="#f0d39a" fill-opacity=".75">福</text>
+<!-- 炉口与香灰 -->
+<ellipse cx="150" cy="66" rx="100" ry="16" fill="url(#rim)"/>
+<ellipse cx="150" cy="66" rx="90" ry="11" fill="url(#ash)"/>
+<ellipse cx="150" cy="64" rx="60" ry="5" fill="#b8aea4" opacity=".35"/>
+</svg>

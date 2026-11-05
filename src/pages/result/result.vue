@@ -32,6 +32,19 @@
         <view class="text">{{ q.meaning }}</view>
       </view>
 
+      <view class="card rise" v-if="q.lines && q.lines.length">
+        <view class="section-title">逐句白话</view>
+        <view v-for="(l, i) in q.poem" :key="i" class="line-row">
+          <view class="line-poem">{{ l }}</view>
+          <view class="text muted-text">{{ q.lines[i] }}</view>
+        </view>
+      </view>
+
+      <view class="card rise" v-if="q.story">
+        <view class="section-title">典故 · {{ q.title }}</view>
+        <view class="text">{{ q.story }}</view>
+      </view>
+
       <view class="card focus" v-if="topic && q.topics[topic]">
         <view class="section-title">所问 · {{ topicName(topic) }}</view>
         <view class="text">{{ q.topics[topic] }}</view>
@@ -50,7 +63,7 @@
 
       <view class="btn share" @click="share">生成签卡 · 分享</view>
       <view class="actions">
-        <view class="btn" @click="again">再求一签</view>
+        <view class="btn" @click="again">问其他神明</view>
         <view class="btn ghost" @click="home">回首页</view>
       </view>
       <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
@@ -73,6 +86,7 @@ import { TOPICS, topicName, getQian, cnNumber, LEVEL_SCORE } from '../../utils/q
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import Sparkles from '../../components/Sparkles.vue'
 import ShareCard from '../../components/ShareCard.vue'
+import { play } from '../../utils/sound'
 
 const q = ref(null)
 const topic = ref('')
@@ -80,6 +94,8 @@ const topic = ref('')
 onLoad((opts) => {
   q.value = getQian(opts.deity, Number(opts.no))
   topic.value = opts.topic || ''
+  // 签纸展开时敲一声磬
+  if (q.value) setTimeout(() => play('bell', { volume: 0.7 }), 300)
   if (q.value) uni.setNavigationBarTitle({ title: `${q.value.deity.name} · 第${cnNumber(q.value.no)}签` })
 })
 
@@ -89,7 +105,8 @@ const cheerText = computed(() => CHEER[q.value?.level]?.[1] || '')
 
 const otherTopics = computed(() => TOPICS.filter((t) => t.key !== topic.value && q.value?.topics[t.key]))
 
-const again = () => uni.redirectTo({ url: `/pages/qiuqian/qiuqian?deity=${q.value.deity.id}&topic=${topic.value}` })
+// 一神一天一签：从解签页回去时换一位神明
+const again = () => uni.redirectTo({ url: `/pages/qiuqian/qiuqian?topic=${topic.value}` })
 const home = () => uni.reLaunch({ url: '/pages/index/index' })
 
 const card = ref(null)
@@ -251,6 +268,22 @@ onShareAppMessage(() => ({
 .text {
   font-size: 28rpx;
   line-height: 1.8;
+}
+.line-row {
+  padding: 14rpx 0;
+  border-bottom: 1rpx dashed $sb-line;
+}
+.line-row:last-child {
+  border-bottom: none;
+}
+.line-poem {
+  color: $sb-gold-light;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+  margin-bottom: 6rpx;
+}
+.muted-text {
+  color: #cfc2aa;
 }
 .focus {
   border-color: $sb-red;

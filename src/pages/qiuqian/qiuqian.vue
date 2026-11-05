@@ -20,7 +20,8 @@
             :class="{ on: deityId === d.id }"
             @click="deityId = d.id"
           >
-            <view v-if="d.id === recommended" class="tag">推荐</view>
+            <view v-if="asked[d.id]" class="tag done">今日已问</view>
+          <view v-else-if="d.id === recommended" class="tag">推荐</view>
             <DeityAvatar :id="d.id" :size="170" :mood="deityId === d.id ? 'laugh' : 'idle'" />
             <view class="god-name">{{ d.name }}</view>
             <view class="muted">{{ d.total }} 签 · {{ d.domains.slice(0, 2).join('、') }}</view>
@@ -98,7 +99,8 @@ import JiaoBlocks from '../../components/JiaoBlocks.vue'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import { TOPICS, topicName, listDeities, recommendDeity, getSet, cnNumber } from '../../utils/qian'
 import { throwJiao } from '../../utils/jiao'
-import { addHistory } from '../../utils/storage'
+import { play, stop } from '../../utils/sound'
+import { addHistory, getTodayAsked, markAsked } from '../../utils/storage'
 import { useShake } from '../../utils/shake'
 
 const MAX_ATTEMPTS = 3
@@ -134,25 +136,57 @@ const avatarBubble = computed(() => {
   return { sheng: '正是此签！', xiao: '再求一次～', yin: '不是这支', li: '咦，立住了！' }[jiao.value.kind]
 })
 
+// 推荐的神明今天已问过，就换一位还没问过的
+const freshDeity = () => {
+  const done = getTodayAsked()
+  return done[recommended.value] ? deities.find((d) => !done[d.id])?.id || recommended.value : recommended.value
+}
+
 onLoad((q) => {
   if (q.topic && TOPICS.some((t) => t.key === q.topic)) topic.value = q.topic
-  deityId.value = q.deity && deities.some((d) => d.id === q.deity) ? q.deity : recommended.value
+  deityId.value = q.deity && deities.some((d) => d.id === q.deity) ? q.deity : freshDeity()
 })
 
 function pickTopic(key) {
   topic.value = key
-  deityId.value = recommended.value
+  deityId.value = freshDeity()
 }
+
+// 一神一天一签：同一位神明今天已正式求过，就不再摇签
+const asked = ref(getTodayAsked())
+onShow(() => (asked.value = getTodayAsked()))
 
 function startShake() {
   if (!deityId.value) return
+  const rec = asked.value[deityId.value]
+  if (rec) {
+    const name = deityName.value
+    uni.showModal({
+      title: '今日已问',
+      content: rec.no
+        ? `今天已向${name}求得第${cnNumber(rec.no)}签。同一位神明一日只求一签，可以重看今天的签，或改问其他神明。`
+        : `今天已向${name}求过三次未得圣筊，民间习惯改日再求。可以改问其他神明。`,
+      confirmText: rec.no ? '看今天的签' : '知道了',
+      cancelText: '改问别人',
+      success: (res) => {
+        if (res.confirm && rec.no) uni.navigateTo({ url: `/pages/result/result?deity=${deityId.value}&no=${rec.no}&topic=${rec.topic || ''}` })
+      },
+    })
+    return
+  }
   step.value = 'shake'
 }
 
 function shakeTube() {
   if (step.value !== 'shake' || shaking.value || drawn.value) return
   shaking.value = true
+  play('rattle')
+  const again = setTimeout(() => play('rattle'), 900)
   setTimeout(() => {
+    clearTimeout(again)
+    stop('rattle')
+    play('stick')
+    setTimeout(() => play('chime', { volume: 0.6 }), 650)
     const total = getSet(deityId.value).qian.length
     drawn.value = 1 + Math.floor(Math.random() * total)
     shaking.value = false
@@ -173,6 +207,8 @@ function tossConfirm() {
     jiao.value = throwJiao()
     landKey.value++
     jiaoState.value = 'landed'
+    setTimeout(() => play('clack'), 340)
+    if (jiao.value.kind === 'sheng') setTimeout(() => play('chime', { volume: 0.6 }), 700)
   }, 1300)
 }
 
@@ -185,6 +221,11 @@ function redraw() {
 }
 
 function reset() {
+  // 三次未得圣筊，选择改日再求：今天不再向这位神明求签
+  if (attempt.value >= MAX_ATTEMPTS) {
+    markAsked(deityId.value, { no: 0, topic: topic.value })
+    asked.value = getTodayAsked()
+  }
   attempt.value = 1
   drawn.value = 0
   jiao.value = null
@@ -195,6 +236,7 @@ function reset() {
 function openResult() {
   const item = { deityId: deityId.value, no: drawn.value, topic: topic.value, confirmed: jiao.value?.kind === 'sheng' }
   addHistory(item)
+  markAsked(item.deityId, { no: item.no, topic: item.topic })
   uni.redirectTo({ url: `/pages/result/result?deity=${item.deityId}&no=${item.no}&topic=${item.topic}` })
 }
 
@@ -261,6 +303,11 @@ onHide(shake.stop)
   padding: 2rpx 14rpx;
   border-radius: 8rpx;
   animation: tagbeat 1.2s ease-in-out infinite;
+}
+.tag.done {
+  background: #4a4440;
+  color: #e8dcc6;
+  animation: none;
 }
 @keyframes tagbeat {
   0%, 100% { transform: scale(1); }

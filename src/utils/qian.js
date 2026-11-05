@@ -23,12 +23,12 @@ const RECOMMEND = {
   study: ['wenchang', 'mazu'],
   career: ['guandi', 'mazu'],
   love: ['yuelao', 'mazu'],
-  wealth: ['guandi', 'mazu'],
-  health: ['mazu'],
+  wealth: ['caishen', 'guandi', 'mazu'],
+  health: ['guanyin', 'mazu'],
   travel: ['mazu'],
 }
 
-const ORDER = ['mazu', 'wenchang', 'guandi', 'yuelao']
+const ORDER = ['mazu', 'guanyin', 'wenchang', 'guandi', 'caishen', 'yuelao']
 
 export function listDeities() {
   return Object.values(sets)

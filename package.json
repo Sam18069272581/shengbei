@@ -6,7 +6,7 @@
     "dev:h5": "npm run build:data && uni",
     "build:h5": "npm run build:data && uni build",
     "dev:mp-weixin": "npm run build:data && uni -p mp-weixin",
-    "build:mp-weixin": "npm run build:data && uni build -p mp-weixin"
+    "build:mp-weixin": "npm run build:data && uni build -p mp-weixin && node scripts/check-mp-size.mjs"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-5030420261029002",
