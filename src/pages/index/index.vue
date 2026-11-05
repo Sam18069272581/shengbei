@@ -110,7 +110,7 @@ function toggleSound() {
 }
 
 // 神明轮流打招呼
-const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～' }
+const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～', guanyin: '平安喜乐～', caishen: '财源广进！' }
 const greeting = (d) => GREET[d.id] || '有求必应'
 const greetId = ref('')
 let timer = null

@@ -180,6 +180,46 @@ ${face({ mouth: 'open', lash: '#8a7a6a', brows: `<path d="M70 84 Q80 76 90 84 M1
 </g>
 <path class="tw" d="M44 120 c-4 -6 -12 -2 -8 4 l8 8 8 -8 c4 -6 -4 -10 -8 -4Z" fill="#ff7a8a"/>`)
 
+// 观音菩萨 -------------------------------------------------------------------
+const guanyin = wrap('#23383a', '#fbf8f2', '#d6cdbd', `
+<path class="sway" d="M62 84 Q50 136 62 176 Q74 160 72 104Z" fill="#fbf8f2" stroke="${OUTLINE}" stroke-width="1.2"/>
+<path class="sway" d="M138 84 Q150 136 138 176 Q126 160 128 104Z" fill="#fbf8f2" stroke="${OUTLINE}" stroke-width="1.2" style="animation-delay:.4s"/>
+<g class="breath">${body('url(#gold)', `<path d="M70 170 q10 -8 20 0 q10 8 20 0 q10 -8 20 0" fill="none" stroke="#b8d8cc" stroke-width="1.3" opacity=".8"/>`)}
+<g transform="rotate(16 132 160)"><path d="M124 176 Q120 160 128 152 L128 144 L136 144 L136 152 Q144 160 140 176Z" fill="#e8f4f0" stroke="${OUTLINE}" stroke-width="1.2"/><rect x="127" y="140" width="10" height="5" rx="2" fill="url(#gold)"/>
+<g class="sway"><path d="M132 140 Q128 120 140 104" stroke="#5a8a4a" stroke-width="1.6" fill="none"/><path d="M134 128 q-8 -2 -10 -8 q8 0 10 8Z M137 118 q8 -4 12 -10 q-8 1 -12 10Z M139 108 q-6 -4 -6 -10 q6 3 6 10Z" fill="#7cbf6a"/></g></g>
+${hands}</g>
+<g class="head">
+${headShape()}
+<path d="M60 96 Q58 56 100 54 Q142 56 140 96 Q130 74 100 72 Q70 74 60 96Z" fill="#2a1a16" stroke="${OUTLINE}" stroke-width="1.4"/>
+${face({ mouth: 'smile', brows: `<path d="M74 84 Q82 81 90 84 M110 84 Q118 81 126 84" stroke="#2a1a16" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>` })}
+<circle cx="100" cy="80" r="2.6" fill="#e0473a"/>
+<path d="M56 100 Q50 52 100 44 Q150 52 144 100 Q138 70 100 64 Q62 70 56 100Z" fill="#fbf8f2" stroke="${OUTLINE}" stroke-width="1.4"/>
+<path d="M64 76 Q100 56 136 76" fill="none" stroke="#e6ddcc" stroke-width="2" opacity=".9"/>
+<path d="M80 54 L86 38 L94 48 L100 30 L106 48 L114 38 L120 54 Q100 48 80 54Z" fill="url(#gold)" stroke="${OUTLINE}" stroke-width="1.3" stroke-linejoin="round"/>
+<circle cx="100" cy="42" r="4.5" fill="#5fc2b0" stroke="#fff3d0" stroke-width="1"/><circle cx="98.8" cy="40.8" r="1.3" fill="#fff"/>
+</g>
+<circle class="glow" cx="100" cy="92" r="52" fill="none" stroke="${GOLD_LIGHT}" stroke-width="1.2" opacity=".5"/>`)
+
+// 财神 -----------------------------------------------------------------------
+const caishen = wrap('#4e1a14', '#e04a36', '#9a2418', `
+<g class="breath">${body('url(#gold)', `<circle cx="100" cy="176" r="9" fill="none" stroke="url(#gold)" stroke-width="2"/><rect x="96.5" y="172.5" width="7" height="7" fill="none" stroke="url(#gold)" stroke-width="1.6"/>`)}
+<g class="float" transform="translate(0 2)"><path d="M54 172 Q56 160 64 162 Q70 152 78 162 Q86 160 88 172 Q72 182 54 172Z" fill="url(#gold)" stroke="${OUTLINE}" stroke-width="1.2"/><ellipse cx="71" cy="161" rx="6" ry="4" fill="#fbe7b0"/></g>
+<g transform="rotate(-20 136 160)"><rect x="133" y="140" width="5" height="40" rx="2.5" fill="url(#gold)" stroke="${OUTLINE}" stroke-width="1"/><path d="M128 142 q7 -16 15 0 q-7 6 -15 0Z" fill="#7cbf6a" stroke="${OUTLINE}" stroke-width="1.1"/></g>
+${hands}</g>
+<g class="head">
+${headShape()}
+${face({ mouth: 'open', brows: `<path d="M72 84 Q81 78 90 84 M110 84 Q119 78 128 84" stroke="#2a1610" stroke-width="3" fill="none" stroke-linecap="round"/>` })}
+<path class="sway" d="M84 118 Q82 136 92 148 Q96 154 100 158 Q104 154 108 148 Q118 136 116 118 Q108 124 100 122 Q92 124 84 118Z" fill="#2a1a16" stroke="${OUTLINE}" stroke-width="1.1"/>
+<path d="M86 114 Q93 108 100 113 Q107 108 114 114" fill="none" stroke="#2a1a16" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M64 74 Q64 40 100 38 Q136 40 136 74Z" fill="#e04a36" stroke="${OUTLINE}" stroke-width="1.4"/>
+<rect x="60" y="68" width="80" height="11" rx="5" fill="#2a1a16" stroke="${OUTLINE}" stroke-width="1.2"/>
+<path d="M66 66 Q100 54 134 66" fill="none" stroke="url(#gold)" stroke-width="3"/>
+<g class="sway" style="transform-origin:0% 50%"><path d="M138 68 Q160 58 172 50 Q178 52 174 58 Q160 70 138 76Z" fill="#2a1a16" stroke="${OUTLINE}" stroke-width="1"/><circle cx="172" cy="54" r="3" fill="url(#gold)"/></g>
+<g class="sway" style="transform-origin:100% 50%;animation-delay:.3s"><path d="M62 68 Q40 58 28 50 Q22 52 26 58 Q40 70 62 76Z" fill="#2a1a16" stroke="${OUTLINE}" stroke-width="1"/><circle cx="28" cy="54" r="3" fill="url(#gold)"/></g>
+<rect x="92" y="44" width="16" height="12" rx="2" fill="url(#gold)" stroke="${OUTLINE}" stroke-width="1"/>
+<text x="100" y="54" font-size="9" text-anchor="middle" fill="#9a2418" font-family="'Songti SC','STSong','Noto Serif SC',serif" font-weight="bold">财</text>
+</g>`)
+
 // 筊杯 -----------------------------------------------------------------------
 const jiaoPath = 'M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z'
 const jiaoFlat = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
@@ -212,6 +252,7 @@ const corner = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
 <path d="M2 38 V2 H38 M8 38 V8 H38 M8 20 H20 V8" fill="none" stroke="${GOLD}" stroke-width="1.2"/>
 </svg>`
 
-const files = { 'mazu.svg': mazu, 'wenchang.svg': wenchang, 'guandi.svg': guandi, 'yuelao.svg': yuelao, 'jiao-flat.svg': jiaoFlat, 'jiao-round.svg': jiaoRound, 'cloud.svg': cloud, 'tube.svg': tube, 'corner.svg': corner }
+// 筊杯已改为手绘写实版（src/static/art/jiao-*.svg），不再由本脚本生成
+const files = { 'mazu.svg': mazu, 'wenchang.svg': wenchang, 'guandi.svg': guandi, 'yuelao.svg': yuelao, 'guanyin.svg': guanyin, 'caishen.svg': caishen, 'cloud.svg': cloud, 'tube.svg': tube, 'corner.svg': corner }
 for (const [name, content] of Object.entries(files)) writeFileSync(join(out, name), content)
 console.log('wrote', Object.keys(files).join(', '))

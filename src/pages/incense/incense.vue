@@ -124,7 +124,7 @@ const minutesLeft = computed(() => Math.max(1, Math.ceil((BURN_MS - elapsed.valu
 const lastWish = computed(() => (burning.value ? last.value?.wish : ''))
 const streak = computed(() => incenseStreak(state.value.days))
 
-const BUBBLE = { mazu: '出入平安～', wenchang: '学业精进！', guandi: '事业亨通！', yuelao: '良缘早至～' }
+const BUBBLE = { mazu: '出入平安～', wenchang: '学业精进！', guandi: '事业亨通！', yuelao: '良缘早至～', guanyin: '平安喜乐～', caishen: '财源广进！' }
 const bubble = computed(() => {
   if (justLit.value) return '心愿已收到'
   if (burning.value) return BUBBLE[deityId.value] || '有求必应'
