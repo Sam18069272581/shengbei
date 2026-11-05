@@ -34,6 +34,10 @@ function validate(file, d) {
     if (!q.meaning) err(file, `${at}: meaning 为空`)
     if (!Array.isArray(q.poem) || q.poem.length < 2 || !q.poem.every((l) => isStr(l) && l)) err(file, `${at}: poem 应为非空字符串数组`)
     for (const t of TOPICS) if (!isStr(q.topics?.[t]) || !q.topics[t]) err(file, `${at}: topics.${t} 缺失`)
+    // 选填：逐句白话（与签诗句数一致）、典故故事
+    if (q.lines !== undefined && (!Array.isArray(q.lines) || q.lines.length !== q.poem.length || !q.lines.every((l) => isStr(l) && l)))
+      err(file, `${at}: lines 应为与 poem 等长的非空字符串数组`)
+    if (q.story !== undefined && !isStr(q.story)) err(file, `${at}: story 应为字符串`)
   })
 }
 

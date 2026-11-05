@@ -32,6 +32,19 @@
         <view class="text">{{ q.meaning }}</view>
       </view>
 
+      <view class="card rise" v-if="q.lines && q.lines.length">
+        <view class="section-title">逐句白话</view>
+        <view v-for="(l, i) in q.poem" :key="i" class="line-row">
+          <view class="line-poem">{{ l }}</view>
+          <view class="text muted-text">{{ q.lines[i] }}</view>
+        </view>
+      </view>
+
+      <view class="card rise" v-if="q.story">
+        <view class="section-title">典故 · {{ q.title }}</view>
+        <view class="text">{{ q.story }}</view>
+      </view>
+
       <view class="card focus" v-if="topic && q.topics[topic]">
         <view class="section-title">所问 · {{ topicName(topic) }}</view>
         <view class="text">{{ q.topics[topic] }}</view>
@@ -255,6 +268,22 @@ onShareAppMessage(() => ({
 .text {
   font-size: 28rpx;
   line-height: 1.8;
+}
+.line-row {
+  padding: 14rpx 0;
+  border-bottom: 1rpx dashed $sb-line;
+}
+.line-row:last-child {
+  border-bottom: none;
+}
+.line-poem {
+  color: $sb-gold-light;
+  font-size: 30rpx;
+  letter-spacing: 4rpx;
+  margin-bottom: 6rpx;
+}
+.muted-text {
+  color: #cfc2aa;
 }
 .focus {
   border-color: $sb-red;
