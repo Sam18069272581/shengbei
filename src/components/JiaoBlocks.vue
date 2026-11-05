@@ -13,7 +13,7 @@
             <image class="img" :class="{ mirror: i === 1 }" :src="art('jiao-round')" mode="widthFix" />
           </view>
         </block>
-        <view class="block" :class="['b' + i, state]">
+        <view class="block" :class="['b' + i, state, { rock: state === 'landed' && flat && standing !== i, stand: state === 'landed' && standing === i }]">
           <image
             class="img"
             :class="{ mirror: i === 1 }"
@@ -37,6 +37,8 @@ const props = defineProps({
   blocks: { type: Array, default: () => [true, false] },
   state: { type: String, default: 'idle' },
   landKey: { type: Number, default: 0 },
+  // 立筊时立着的那一片（-1 表示没有）
+  standing: { type: Number, default: -1 },
 })
 const sheng = computed(() => props.blocks[0] !== props.blocks[1])
 </script>
@@ -87,6 +89,47 @@ const sheng = computed(() => props.blocks[0] !== props.blocks[1])
 .tossing.b1 { animation: toss1 1s cubic-bezier(0.3, 0.6, 0.5, 1) infinite; }
 .landed.b0 { animation: land0 0.8s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
 .landed.b1 { animation: land1 0.8s cubic-bezier(0.3, 0.7, 0.4, 1) 0.05s both; }
+/* 平面朝上 = 凸面着地：落地后会像不倒翁一样多晃几下才停 */
+.landed.rock.b0 { animation: land0 0.8s cubic-bezier(0.3, 0.7, 0.4, 1) both, rock0 1.1s ease-out 0.8s both; }
+.landed.rock.b1 { animation: land1 0.8s cubic-bezier(0.3, 0.7, 0.4, 1) 0.05s both, rock1 1.1s ease-out 0.85s both; }
+@keyframes rock0 {
+  0% { transform: rotate(-12deg); }
+  20% { transform: rotate(-24deg); }
+  42% { transform: rotate(-3deg); }
+  62% { transform: rotate(-17deg); }
+  80% { transform: rotate(-9deg); }
+  100% { transform: rotate(-12deg); }
+}
+@keyframes rock1 {
+  0% { transform: rotate(12deg); }
+  20% { transform: rotate(24deg); }
+  42% { transform: rotate(3deg); }
+  62% { transform: rotate(17deg); }
+  80% { transform: rotate(9deg); }
+  100% { transform: rotate(12deg); }
+}
+/* 立筊：转成拱形用两个尖端立在地上，摇摇欲坠后立住 */
+.landed.stand {
+  transform-origin: 50% 50%;
+}
+.landed.stand.b0 { animation: stand0 1.6s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+.landed.stand.b1 { animation: stand1 1.6s cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+@keyframes stand0 {
+  0% { transform: translateY(-260rpx) rotate(200deg); }
+  35% { transform: translateY(40rpx) rotate(94deg); }
+  50% { transform: translateY(30rpx) rotate(80deg); }
+  64% { transform: translateY(40rpx) rotate(97deg); }
+  78% { transform: translateY(38rpx) rotate(86deg); }
+  100% { transform: translateY(40rpx) rotate(90deg); }
+}
+@keyframes stand1 {
+  0% { transform: translateY(-260rpx) rotate(-200deg); }
+  35% { transform: translateY(40rpx) rotate(-94deg); }
+  50% { transform: translateY(30rpx) rotate(-80deg); }
+  64% { transform: translateY(40rpx) rotate(-97deg); }
+  78% { transform: translateY(38rpx) rotate(-86deg); }
+  100% { transform: translateY(40rpx) rotate(-90deg); }
+}
 
 @keyframes idle {
   0%, 100% { transform: translateY(0) rotate(-3deg); }

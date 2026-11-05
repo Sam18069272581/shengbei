@@ -1,5 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<defs><radialGradient id="g" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#e2604e"/><stop offset=".5" stop-color="#9a2418"/><stop offset="1" stop-color="#4a0d08"/></radialGradient></defs>
-<path d="M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z" fill="url(#g)" stroke="#d4af6e" stroke-width="2.5"/>
-<path d="M30 40 C20 70 20 110 28 140" stroke="#fff" stroke-width="4" fill="none" opacity=".25" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 210">
+<!-- 筊杯凸面朝上：木胎朱漆，弧面高光，尖端磨出木色 -->
+<defs>
+<radialGradient id="body" cx=".32" cy=".5" r=".75"><stop offset="0" stop-color="#d2412f"/><stop offset=".45" stop-color="#a8261b"/><stop offset=".85" stop-color="#6a120b"/><stop offset="1" stop-color="#4a0b06"/></radialGradient>
+<linearGradient id="hi" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".25" stop-color="#ffe9d6" stop-opacity=".55"/><stop offset=".55" stop-color="#ffe9d6" stop-opacity=".75"/><stop offset=".8" stop-color="#ffe9d6" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<radialGradient id="wear" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c08a52" stop-opacity=".85"/><stop offset="1" stop-color="#c08a52" stop-opacity="0"/></radialGradient>
+<clipPath id="c"><path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z"/></clipPath>
+</defs>
+<path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z" fill="url(#body)"/>
+<g clip-path="url(#c)">
+<!-- 木纹透过漆层的细纹 -->
+<g fill="none" stroke="#3a0804" stroke-opacity=".18" stroke-width=".8">
+<path d="M66 12 C32 30 15 66 15 105 C15 144 32 180 66 198"/>
+<path d="M74 14 C44 36 28 70 28 105 C28 140 44 174 74 196"/>
+<path d="M80 18 C56 42 44 74 43 105 C44 136 56 168 80 192"/>
+</g>
+<!-- 弧面背光一侧的暗部 -->
+<path d="M60 105 C60 70 68 38 88 17 L100 17 L100 200 L88 193 C68 172 60 140 60 105Z" fill="#2a0603" opacity=".35"/>
+<!-- 漆面高光：沿弧脊一道 -->
+<path d="M50 30 C33 54 25 80 25 105 C25 130 33 156 50 180 C39 156 34 130 34 105 C34 80 39 54 50 30Z" fill="url(#hi)"/>
+<ellipse cx="28" cy="86" rx="3.5" ry="17" fill="#fff" opacity=".55"/>
+<!-- 尖端漆面磨损，露出木色 -->
+<ellipse cx="84" cy="10" rx="9" ry="7" fill="url(#wear)"/>
+<ellipse cx="84" cy="200" rx="9" ry="7" fill="url(#wear)"/>
+<ellipse cx="7" cy="112" rx="4" ry="10" fill="url(#wear)" opacity=".5"/>
+</g>
+<path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z" fill="none" stroke="#3a0804" stroke-width="1.4" stroke-opacity=".8"/>
 </svg>

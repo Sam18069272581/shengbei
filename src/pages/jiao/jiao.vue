@@ -17,7 +17,7 @@
 
       <view class="stage">
         <DeityAvatar :id="deityId" :size="260" :mood="mood" :mood-key="landKey" :bubble="bubble" />
-        <JiaoBlocks :blocks="current ? current.blocks : [true, false]" :state="state" :land-key="landKey" />
+        <JiaoBlocks :blocks="current ? current.blocks : [true, false]" :standing="current ? current.standing : -1" :state="state" :land-key="landKey" />
       </view>
 
       <view class="result" v-if="showResult">
@@ -51,6 +51,7 @@
         <view class="rule"><text class="sheng">圣筊</text> 一平一凸：神明应允，可以去做。</view>
         <view class="rule"><text class="xiao">笑筊</text> 两平：神明笑而不答，问题可能没问清楚。</view>
         <view class="rule"><text class="yin">阴筊</text> 两凸：神明不认同，或时机未到。</view>
+      <view class="rule"><text class="li">立筊</text> 筊杯立而不倒：极罕见，神明另有指示，重掷即可。</view>
         <view class="muted">重大事情习惯求「三圣筊」，连续三次圣筊才算确认。</view>
       </view>
       <view class="disclaimer">仅供娱乐与传统文化体验</view>
@@ -81,6 +82,7 @@ const REACT = {
   sheng: { mood: 'nod', bubble: ['允！', '可行～', '去吧！'] },
   xiao: { mood: 'laugh', bubble: ['哈哈，再想想？', '问清楚些～', '嘻嘻'] },
   yin: { mood: 'shake', bubble: ['不妥不妥', '时机未到', '再斟酌'] },
+  li: { mood: 'laugh', bubble: ['咦！立住了', '另有指示～', '难得一见'] },
 }
 const mood = computed(() => (state.value === 'tossing' ? 'think' : state.value === 'landed' && current.value ? REACT[current.value.kind].mood : 'idle'))
 const bubble = computed(() => {
@@ -186,6 +188,7 @@ onHide(shake.stop)
 .sheng { color: $sb-red; }
 .xiao { color: #c9a35c; }
 .yin { color: #8c847c; }
+.li { color: #e9c77e; }
 .streak {
   text-align: center;
   color: $sb-red;

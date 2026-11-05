@@ -65,7 +65,7 @@
       <block v-else-if="step === 'confirm'">
         <view class="center-title">第{{ cnNumber(drawn) }}签 · 是否为此签？</view>
         <DeityAvatar :id="deityId" :size="200" :mood="avatarMood" :mood-key="landKey" :bubble="avatarBubble" />
-        <JiaoBlocks :blocks="jiao ? jiao.blocks : [true, false]" :state="jiaoState" :land-key="landKey" />
+        <JiaoBlocks :blocks="jiao ? jiao.blocks : [true, false]" :standing="jiao ? jiao.standing : -1" :state="jiaoState" :land-key="landKey" />
         <view v-if="jiao && jiaoState === 'landed'" class="center" :key="landKey">
           <view class="jiao-name" :class="[jiao.kind, { foil: jiao.kind === 'sheng' }]">{{ jiao.name }}</view>
           <view class="muted">{{ confirmText }}</view>
@@ -75,6 +75,7 @@
           {{ jiaoState === 'tossing' ? '筊杯飞起来啦…' : '掷 筊' }}
         </view>
         <view v-else-if="jiao.kind === 'sheng'" class="btn gap glow" @click="openResult">圣筊应允，看签诗</view>
+        <view v-else-if="jiao.kind === 'li'" class="btn gap" @click="tossConfirm">立筊罕见，再掷一次</view>
         <view v-else-if="attempt < MAX_ATTEMPTS" class="btn gap" @click="redraw">重新求签</view>
         <block v-else>
           <view class="muted center gap">已求 {{ MAX_ATTEMPTS }} 次未得圣筊，或许时机未到，或问题还不够清楚。</view>
@@ -119,17 +120,18 @@ const landKey = ref(0)
 const confirmText = computed(() => {
   if (!jiao.value) return ''
   if (jiao.value.kind === 'sheng') return '神明应允，此签即为所求。'
+  if (jiao.value.kind === 'li') return '立筊：筊杯立而不倒，神明另有指示，再掷一次即可（不算一次求签）。'
   return jiao.value.kind === 'xiao' ? '笑筊：神明未明示，需重新求签。' : '阴筊：并非此签，需重新求签。'
 })
 const avatarMood = computed(() => {
   if (jiaoState.value === 'tossing') return 'think'
   if (!jiao.value) return 'idle'
-  return { sheng: 'nod', xiao: 'laugh', yin: 'shake' }[jiao.value.kind]
+  return { sheng: 'nod', xiao: 'laugh', yin: 'shake', li: 'laugh' }[jiao.value.kind]
 })
 const avatarBubble = computed(() => {
   if (jiaoState.value === 'tossing') return '……'
   if (!jiao.value) return '掷筊问我'
-  return { sheng: '正是此签！', xiao: '再求一次～', yin: '不是这支' }[jiao.value.kind]
+  return { sheng: '正是此签！', xiao: '再求一次～', yin: '不是这支', li: '咦，立住了！' }[jiao.value.kind]
 })
 
 onLoad((q) => {
@@ -504,6 +506,7 @@ onHide(shake.stop)
 .jiao-name.sheng { color: $sb-red; }
 .jiao-name.xiao { color: #c9a35c; }
 .jiao-name.yin { color: #8c847c; }
+.jiao-name.li { color: #e9c77e; }
 .glow {
   animation: glow 1.4s ease-in-out infinite;
 }

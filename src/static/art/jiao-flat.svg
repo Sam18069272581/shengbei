@@ -1,5 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 194">
-<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c79a62"/><stop offset="1" stop-color="#f0d6a2"/></linearGradient></defs>
-<path d="M66 6 C24 10 6 50 8 96 C10 142 30 180 70 188 C46 162 34 128 36 96 C38 62 46 30 66 6Z" fill="url(#w)" stroke="#d4af6e" stroke-width="2.5"/>
-<path d="M54 30 C40 62 36 120 54 166 M40 44 C28 76 28 120 40 154" stroke="#9c7442" stroke-width="1.2" fill="none" opacity=".55"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 210">
+<!-- 筊杯平面朝上：剖开的平面，漆色较哑，内弧一道倒角，外缘看得到侧面厚度 -->
+<defs>
+<linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8372a"/><stop offset=".5" stop-color="#a42c20"/><stop offset="1" stop-color="#8a2118"/></linearGradient>
+<linearGradient id="bevel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e06a52"/><stop offset="1" stop-color="#b5402f"/></linearGradient>
+<radialGradient id="wear" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c79358" stop-opacity=".9"/><stop offset="1" stop-color="#c79358" stop-opacity="0"/></radialGradient>
+<clipPath id="c"><path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z"/></clipPath>
+</defs>
+<!-- 侧面厚度（略深） -->
+<path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z" fill="#5e100a" transform="translate(-3 2)"/>
+<path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z" fill="url(#face)"/>
+<g clip-path="url(#c)">
+<!-- 平面上的木纹 -->
+<g fill="none" stroke="#5a0e08" stroke-opacity=".22" stroke-width=".9">
+<path d="M66 12 C34 32 17 68 17 105 C17 142 34 178 66 198"/>
+<path d="M74 16 C46 40 32 72 31 105 C32 138 46 170 74 194"/>
+<path d="M40 56 C34 78 33 96 34 114" stroke-opacity=".15"/>
+</g>
+<!-- 内弧倒角：一条较亮的斜面 -->
+<path d="M88 17 C68 38 60 70 60 105 C60 140 68 172 88 193 L80 197 C60 174 52 140 52 105 C52 70 60 36 80 13Z" fill="url(#bevel)" opacity=".85"/>
+<!-- 外缘一圈细亮边 -->
+<path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204" fill="none" stroke="#e9806a" stroke-opacity=".45" stroke-width="1.6"/>
+<!-- 磨损露木 -->
+<ellipse cx="84" cy="10" rx="8" ry="6" fill="url(#wear)"/>
+<ellipse cx="84" cy="200" rx="8" ry="6" fill="url(#wear)"/>
+</g>
+<path d="M80 6 C26 16 4 60 4 105 C4 150 26 194 80 204 C88 206 94 199 88 193 C68 172 60 140 60 105 C60 70 68 38 88 17 C94 11 88 4 80 6Z" fill="none" stroke="#3a0804" stroke-width="1.2" stroke-opacity=".7"/>
 </svg>
