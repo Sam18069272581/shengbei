@@ -63,6 +63,10 @@
         </view>
       </view>
 
+      <view class="history-link" @click="go('/pages/incense/incense')">
+        <text>上香祈福</text>
+        <text class="muted">{{ incenseStreakDays ? `已连续 ${incenseStreakDays} 天` : '敬香三炷，许个心愿' }} ›</text>
+      </view>
       <view class="history-link" @click="go('/pages/history/history')">
         <text>我的签</text>
         <text class="muted">{{ historyCount ? `已求 ${historyCount} 签` : '还没有求过签' }} ›</text>
@@ -88,13 +92,14 @@ import { ref } from 'vue'
 import { onShow, onHide } from '@dcloudio/uni-app'
 import { TOPICS, listDeities } from '../../utils/qian'
 import { dailyFortune } from '../../utils/daily'
-import { getHistory } from '../../utils/storage'
+import { getHistory, incenseStreak } from '../../utils/storage'
 import DeityAvatar from '../../components/DeityAvatar.vue'
 import CloudLayer from '../../components/CloudLayer.vue'
 
 const deities = listDeities()
 const fortune = ref(dailyFortune())
 const historyCount = ref(getHistory().length)
+const incenseStreakDays = ref(incenseStreak())
 
 // 神明轮流打招呼
 const GREET = { mazu: '出入平安～', wenchang: '金榜题名！', guandi: '事业顺遂！', yuelao: '良缘天定～' }
@@ -105,6 +110,7 @@ let idx = 0
 onShow(() => {
   fortune.value = dailyFortune()
   historyCount.value = getHistory().length
+  incenseStreakDays.value = incenseStreak()
   clearInterval(timer)
   const tick = () => {
     greetId.value = deities[idx % deities.length]?.id || ''

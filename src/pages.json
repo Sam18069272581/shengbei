@@ -6,7 +6,8 @@
     { "path": "pages/result/result", "style": { "navigationBarTitleText": "解签" } },
     { "path": "pages/daily/daily", "style": { "navigationBarTitleText": "今日运势" } },
     { "path": "pages/huangli/huangli", "style": { "navigationBarTitleText": "黄历" } },
-    { "path": "pages/history/history", "style": { "navigationBarTitleText": "我的签" } }
+    { "path": "pages/history/history", "style": { "navigationBarTitleText": "我的签" } },
+    { "path": "pages/incense/incense", "style": { "navigationBarTitleText": "上香祈福" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",
