@@ -66,3 +66,13 @@ export function incenseStreak(days = getIncense().days) {
   }
   return n
 }
+
+// 一神一天一签：记录今天向每位神明正式求过的签（no 为空表示三次未得圣筊、改日再求）
+export function getTodayAsked() {
+  const s = get('sb_asked', {})
+  return s.date === today() ? s.by || {} : {}
+}
+export function markAsked(deityId, rec) {
+  const by = { ...getTodayAsked(), [deityId]: { ...rec, at: Date.now() } }
+  set('sb_asked', { date: today(), by })
+}

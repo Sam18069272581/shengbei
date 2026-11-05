@@ -50,7 +50,7 @@
 
       <view class="btn share" @click="share">生成签卡 · 分享</view>
       <view class="actions">
-        <view class="btn" @click="again">再求一签</view>
+        <view class="btn" @click="again">问其他神明</view>
         <view class="btn ghost" @click="home">回首页</view>
       </view>
       <view class="disclaimer">签诗为传统民间文本，释义为本站自撰，仅供娱乐与传统文化学习</view>
@@ -92,7 +92,8 @@ const cheerText = computed(() => CHEER[q.value?.level]?.[1] || '')
 
 const otherTopics = computed(() => TOPICS.filter((t) => t.key !== topic.value && q.value?.topics[t.key]))
 
-const again = () => uni.redirectTo({ url: `/pages/qiuqian/qiuqian?deity=${q.value.deity.id}&topic=${topic.value}` })
+// 一神一天一签：从解签页回去时换一位神明
+const again = () => uni.redirectTo({ url: `/pages/qiuqian/qiuqian?topic=${topic.value}` })
 const home = () => uni.reLaunch({ url: '/pages/index/index' })
 
 const card = ref(null)
